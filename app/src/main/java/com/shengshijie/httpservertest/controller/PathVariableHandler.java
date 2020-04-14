@@ -7,6 +7,8 @@ import com.shengshijie.httpserver.IFunctionHandler;
 import com.shengshijie.httpserver.RawResponse;
 import com.shengshijie.httpserver.RequestMapping;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 @AutoService(IFunctionHandler.class)
 @RequestMapping(path = "/moment/list/",equal = false)
 public class PathVariableHandler implements IFunctionHandler<List<HashMap<String,String>>> {
+    @NotNull
     @Override
     public RawResponse<List<HashMap<String,String>>> execute(HttpRequest request) {
 
