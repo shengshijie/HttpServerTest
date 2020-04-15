@@ -58,13 +58,13 @@ class HttpHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
 
     fun registerRouter() {
         for (handler in ServiceLoader.load(IController::class.java)) {
-            if (handler.javaClass.isAnnotationPresent(Controller::class.java)) {
-                val controllerAnnotation = handler.javaClass.getAnnotation(Controller::class.java)!!
+            if (handler.javaClass.isAnnotationPresent(Controller::class.java) && handler.javaClass.isAnnotationPresent(RequestMapping::class.java)) {
+                val rootRequestMappingAnnotation = handler.javaClass.getAnnotation(RequestMapping::class.java)!!
                 val methods: Array<Method> = handler.javaClass.declaredMethods
                 methods.forEach {
                     if (it.isAnnotationPresent(RequestMapping::class.java)) {
                         val requestMappingAnnotation = it.getAnnotation(RequestMapping::class.java)!!
-                        val path: Path? = Path.make(requestMappingAnnotation, controllerAnnotation)
+                        val path: Path? = Path.make(requestMappingAnnotation, rootRequestMappingAnnotation)
                         if (path != null && !functionHandlerMap.containsKey(path)) {
                             functionHandlerMap[path] = Invoker(it, handler.javaClass.newInstance())
                         }

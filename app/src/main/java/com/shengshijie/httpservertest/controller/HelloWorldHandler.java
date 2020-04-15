@@ -14,11 +14,12 @@ import com.shengshijie.httpservertest.controller.requset.SetAmountRequest;
 import org.jetbrains.annotations.NotNull;
 
 @AutoService(IController.class)
-@Controller(value = "api")
+@Controller
+@RequestMapping(value = "/pay")
 public class HelloWorldHandler implements IController {
 
     @NotNull
-    @RequestMapping(path = "/hello",method = "POST")
+    @RequestMapping(value = "/setAmount", method = "POST")
     public RawResponse<Object> hello(HttpRequest request) {
         SetAmountRequest setAmountRequest = new Gson().fromJson(request.contentText(), SetAmountRequest.class);
         if (setAmountRequest.getAmount() > 10) {
@@ -29,7 +30,7 @@ public class HelloWorldHandler implements IController {
     }
 
     @NotNull
-    @RequestMapping(path = "/hello2",method = "GET")
+    @RequestMapping(value = "/hello2", method = "GET")
     public RawResponse<Object> hello2(HttpRequest request) {
         SetAmountRequest setAmountRequest = new Gson().fromJson(request.contentText(), SetAmountRequest.class);
         if (setAmountRequest.getAmount() > 10) {

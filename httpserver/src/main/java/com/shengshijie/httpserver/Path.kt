@@ -2,9 +2,9 @@ package com.shengshijie.httpserver
 
 import java.util.*
 
-class Path(requestMapping: RequestMapping, controller: Controller) {
+class Path(requestMapping: RequestMapping, rootRequestMapping: RequestMapping) {
     var method: String = requestMapping.method
-    var uri: String = "/" + controller.value + requestMapping.path
+    var uri: String = rootRequestMapping.value + requestMapping.value
     var isEqual: Boolean = requestMapping.equal
 
     override fun toString(): String {
@@ -23,8 +23,8 @@ class Path(requestMapping: RequestMapping, controller: Controller) {
     }
 
     companion object {
-        fun make(requestMapping: RequestMapping, controller: Controller): Path {
-            return Path(requestMapping, controller)
+        fun make(requestMapping: RequestMapping, rootRequestMapping: RequestMapping): Path {
+            return Path(requestMapping, rootRequestMapping)
         }
     }
 

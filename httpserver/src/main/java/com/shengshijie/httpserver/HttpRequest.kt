@@ -34,7 +34,7 @@ class HttpRequest(private val realRequest: FullHttpRequest) : FullHttpRequest {
     }
 
     fun matched(path: String?, equal: Boolean): Boolean {
-        val uri = uri().toLowerCase(Locale.getDefault())
+        val uri = uri()
         return if (equal) path == uri else uri.startsWith(path!!)
     }
 
@@ -107,7 +107,7 @@ class HttpRequest(private val realRequest: FullHttpRequest) : FullHttpRequest {
     }
 
     override fun getMethod(): HttpMethod {
-        return realRequest.method
+        return realRequest.method()
     }
 
     override fun method(): HttpMethod {
@@ -119,7 +119,7 @@ class HttpRequest(private val realRequest: FullHttpRequest) : FullHttpRequest {
     }
 
     override fun getUri(): String {
-        return realRequest.uri
+        return realRequest.uri()
     }
 
     override fun uri(): String {
@@ -131,7 +131,7 @@ class HttpRequest(private val realRequest: FullHttpRequest) : FullHttpRequest {
     }
 
     override fun getDecoderResult(): DecoderResult {
-        return realRequest.decoderResult
+        return realRequest.decoderResult()
     }
 
     override fun decoderResult(): DecoderResult {
