@@ -6,16 +6,16 @@ import com.google.auto.service.AutoService;
 import com.google.gson.Gson;
 import com.shengshijie.httpserver.Controller;
 import com.shengshijie.httpserver.HttpRequest;
-import com.shengshijie.httpserver.IFunctionHandler;
+import com.shengshijie.httpserver.IController;
 import com.shengshijie.httpserver.RawResponse;
 import com.shengshijie.httpserver.RequestMapping;
 import com.shengshijie.httpservertest.controller.requset.SetAmountRequest;
 
 import org.jetbrains.annotations.NotNull;
 
-@AutoService(IFunctionHandler.class)
+@AutoService(IController.class)
 @Controller(value = "api")
-public class HelloWorldHandler implements IFunctionHandler {
+public class HelloWorldHandler implements IController {
 
     @NotNull
     @RequestMapping(path = "/hello",method = "POST")

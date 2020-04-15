@@ -57,7 +57,7 @@ class HttpHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
     }
 
     fun registerRouter() {
-        for (handler in ServiceLoader.load(IFunctionHandler::class.java)) {
+        for (handler in ServiceLoader.load(IController::class.java)) {
             if (handler.javaClass.isAnnotationPresent(Controller::class.java)) {
                 val controllerAnnotation = handler.javaClass.getAnnotation(Controller::class.java)!!
                 val methods: Array<Method> = handler.javaClass.declaredMethods

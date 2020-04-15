@@ -1,3 +1,3 @@
 package com.shengshijie.httpserver
 
-interface IFunctionHandler
+interface IController
