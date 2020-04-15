@@ -1,4 +1,4 @@
-package com.shengshijie.httpserver
+package com.shengshijie.httpserver.http
 
 import io.netty.buffer.ByteBuf
 import io.netty.handler.codec.DecoderResult
@@ -7,9 +7,8 @@ import io.netty.handler.codec.http.HttpHeaders
 import io.netty.handler.codec.http.HttpMethod
 import io.netty.handler.codec.http.HttpVersion
 import java.nio.charset.Charset
-import java.util.*
 
-class HttpRequest(private val realRequest: FullHttpRequest) : FullHttpRequest {
+class HttpFullRequest(private val realRequest: FullHttpRequest) : FullHttpRequest {
     fun contentText(): String {
         return content().toString(Charset.forName("UTF-8"))
     }

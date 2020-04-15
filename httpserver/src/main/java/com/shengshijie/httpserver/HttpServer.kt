@@ -1,6 +1,11 @@
 package com.shengshijie.httpserver
 
 import android.util.Log
+import com.shengshijie.httpserver.file.FileUploadHandler
+import com.shengshijie.httpserver.http.FilterLoggingHandler
+import com.shengshijie.httpserver.http.HttpHandler
+import com.shengshijie.httpserver.http.InterceptorHandler
+import com.shengshijie.httpserver.websocket.WebSocketHandler
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.EventLoopGroup
@@ -9,8 +14,10 @@ import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioChannelOption
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.codec.http.HttpObjectAggregator
-import io.netty.handler.codec.http.HttpServerCodec
-import io.netty.util.concurrent.Future
+import io.netty.handler.codec.http.HttpRequestDecoder
+import io.netty.handler.codec.http.HttpResponseEncoder
+import io.netty.handler.stream.ChunkedWriteHandler
+
 
 object HttpServer {
     @JvmStatic
@@ -29,11 +36,16 @@ object HttpServer {
         bootstrap.childOption(NioChannelOption.SO_SNDBUF, 2048)
         bootstrap.childHandler(object : ChannelInitializer<SocketChannel>() {
             public override fun initChannel(ch: SocketChannel) {
-                ch.pipeline().addLast("codec", HttpServerCodec())
-                ch.pipeline().addLast("aggregator", HttpObjectAggregator(512 * 1024))
+                ch.pipeline().addLast("decoder", HttpRequestDecoder())
+                ch.pipeline().addLast("encoder", HttpResponseEncoder())
+                ch.pipeline().addLast("aggregator", HttpObjectAggregator(1024 * 1024 * 5))
+                ch.pipeline().addLast("chunked", ChunkedWriteHandler())
                 ch.pipeline().addLast("logging", FilterLoggingHandler())
                 ch.pipeline().addLast("interceptor", InterceptorHandler())
-                ch.pipeline().addLast("bizHandler", httpHandler)
+                ch.pipeline().addLast("dispatchHandler", DispatchHandler())
+                ch.pipeline().addLast("httpHandler",httpHandler)
+                ch.pipeline().addLast("webSocketHandler", WebSocketHandler())
+                ch.pipeline().addLast("fileUploadHandler", FileUploadHandler())
             }
         })
         val channelFuture = bootstrap.bind(port).syncUninterruptibly().addListener { Log.i("SERVER", "Server Start") }

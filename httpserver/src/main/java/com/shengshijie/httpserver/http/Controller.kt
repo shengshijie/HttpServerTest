@@ -1,4 +1,4 @@
-package com.shengshijie.httpserver
+package com.shengshijie.httpserver.http
 
 @Target(AnnotationTarget.CLASS)
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)

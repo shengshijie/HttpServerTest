@@ -1,5 +1,6 @@
-package com.shengshijie.httpserver
+package com.shengshijie.httpserver.http
 
+import com.shengshijie.httpserver.websocket.ParamUtil
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
@@ -13,7 +14,7 @@ import java.util.*
 import java.util.concurrent.Executors
 
 @Sharable
-class HttpHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
+class HttpHandler : SimpleChannelInboundHandler<HttpRequestVo>() {
 
     private val functionHandlerMap = HashMap<Path, Invoker>()
     private val executor = Executors.newCachedThreadPool { runnable: Runnable ->
@@ -26,22 +27,24 @@ class HttpHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
         ctx.flush()
     }
 
-    override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
+    override fun channelRead0(ctx: ChannelHandlerContext, requestVo: HttpRequestVo) {
+        val request: FullHttpRequest = requestVo.getRequest()
+        val uri = ParamUtil.getUri(request)
         val copyRequest = request.copy()
-        executor.execute { onReceivedRequest(ctx, HttpRequest(copyRequest)) }
+        executor.execute { onReceivedRequest(ctx, HttpFullRequest(copyRequest)) }
     }
 
-    private fun onReceivedRequest(context: ChannelHandlerContext, request: HttpRequest) {
-        val response = handleHttpRequest(request)
+    private fun onReceivedRequest(context: ChannelHandlerContext, fullRequest: HttpFullRequest) {
+        val response = handleHttpRequest(fullRequest)
         context.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
-        ReferenceCountUtil.release(request)
+        ReferenceCountUtil.release(fullRequest)
     }
 
-    private fun handleHttpRequest(request: HttpRequest): FullHttpResponse {
+    private fun handleHttpRequest(fullRequest: HttpFullRequest): FullHttpResponse {
         val invoker: Invoker?
         return try {
-            invoker = matchFunctionHandler(request)
-            val rawResponse = invoker?.method?.invoke(invoker.any, request)
+            invoker = matchFunctionHandler(fullRequest)
+            val rawResponse = invoker?.method?.invoke(invoker.any, fullRequest)
             if (rawResponse is RawResponse<*>) {
                 HttpResponse.ok(rawResponse.toJSONString())
             } else {
@@ -75,13 +78,13 @@ class HttpHandler : SimpleChannelInboundHandler<FullHttpRequest>() {
     }
 
     @Throws(PathNotFoundException::class, MethodNotAllowedException::class)
-    private fun matchFunctionHandler(request: HttpRequest): Invoker? {
+    private fun matchFunctionHandler(fullRequest: HttpFullRequest): Invoker? {
         var requestPath: Path? = null
         var methodAllowed = false
         for ((path) in functionHandlerMap) {
-            if (request.matched(path.uri, path.isEqual)) {
+            if (fullRequest.matched(path.uri, path.isEqual)) {
                 requestPath = path
-                if (request.isAllowed(path.method)) {
+                if (fullRequest.isAllowed(path.method)) {
                     methodAllowed = true
                 }
             }

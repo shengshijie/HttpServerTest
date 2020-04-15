@@ -1,4 +1,4 @@
-package com.shengshijie.httpserver
+package com.shengshijie.httpserver.http
 
 import com.google.gson.GsonBuilder
 
