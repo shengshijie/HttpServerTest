@@ -2,10 +2,10 @@ package com.shengshijie.httpserver
 
 import java.util.*
 
-class Path(annotation: RequestMapping) {
-    var method: String = annotation.method
-    var uri: String = annotation.path
-    var isEqual: Boolean = annotation.equal
+class Path(requestMapping: RequestMapping, controller: Controller) {
+    var method: String = requestMapping.method
+    var uri: String = "/" + controller.value + requestMapping.path
+    var isEqual: Boolean = requestMapping.equal
 
     override fun toString(): String {
         return method.toUpperCase(Locale.getDefault()) + " " + uri.toUpperCase(Locale.getDefault())
@@ -23,8 +23,8 @@ class Path(annotation: RequestMapping) {
     }
 
     companion object {
-        fun make(annotation: RequestMapping): Path {
-            return Path(annotation)
+        fun make(requestMapping: RequestMapping, controller: Controller): Path {
+            return Path(requestMapping, controller)
         }
     }
 

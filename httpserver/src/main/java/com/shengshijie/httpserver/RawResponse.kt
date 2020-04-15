@@ -30,8 +30,8 @@ class RawResponse<T>(private val code: Int, private val message: String, private
         }
 
         @JvmStatic
-        fun fail(msg: String): RawResponse<*> {
-            return RawResponse<String?>(500, msg, null)
+        fun fail(msg: String): RawResponse<Any> {
+            return RawResponse(500, msg, Unit)
         }
 
     }
