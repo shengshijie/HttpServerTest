@@ -9,6 +9,7 @@ import io.netty.handler.logging.LoggingHandler
 import java.net.SocketAddress
 
 class FilterLoggingHandler : LoggingHandler(LogLevel.INFO) {
+
     override fun channelRegistered(ctx: ChannelHandlerContext) {
         ctx.fireChannelRegistered()
     }

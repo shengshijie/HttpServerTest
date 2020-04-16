@@ -28,7 +28,7 @@ class HttpHandler : SimpleChannelInboundHandler<HttpRequestVo>() {
     }
 
     override fun channelRead0(ctx: ChannelHandlerContext, requestVo: HttpRequestVo) {
-        val request: FullHttpRequest = requestVo.getRequest()
+        val request: FullHttpRequest = requestVo.request
         val uri = ParamUtil.getUri(request)
         val copyRequest = request.copy()
         executor.execute { onReceivedRequest(ctx, HttpFullRequest(copyRequest)) }
