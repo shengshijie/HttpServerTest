@@ -1,11 +1,11 @@
 package com.shengshijie.httpservertest;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
-import android.view.View;
-
 import com.shengshijie.httpserver.HttpServer;
+import com.shengshijie.log.HLog;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,11 +13,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.btn_start).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                HttpServer.start(8888);
-            }
-        });
+        HLog.init(this,"");
+        findViewById(R.id.btn_start).setOnClickListener(v -> HttpServer.start(8888, (i,s) -> {
+            HLog.log(i+5,s);
+            return null;
+        }));
     }
 }

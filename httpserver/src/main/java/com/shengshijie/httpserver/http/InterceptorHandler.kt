@@ -1,6 +1,5 @@
 package com.shengshijie.httpserver.http
 
-import com.shengshijie.httpserver.http.HttpResponse
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext

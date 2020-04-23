@@ -20,13 +20,13 @@ import io.netty.handler.stream.ChunkedWriteHandler
 
 
 object HttpServer {
+
     @JvmStatic
-    fun start(port: Int) {
+    @JvmOverloads
+    fun start(port: Int, log: (level:Int,content: String) -> Unit = {_,_->}) {
         val bootstrap = ServerBootstrap()
         val bossGroup: EventLoopGroup = NioEventLoopGroup()
         val workerGroup: EventLoopGroup = NioEventLoopGroup()
-        val httpHandler = HttpHandler()
-        httpHandler.registerRouter()
         bootstrap.group(bossGroup, workerGroup)
         bootstrap.channel(NioServerSocketChannel::class.java)
         bootstrap.childOption(NioChannelOption.TCP_NODELAY, true)
@@ -40,17 +40,17 @@ object HttpServer {
                 ch.pipeline().addLast("encoder", HttpResponseEncoder())
                 ch.pipeline().addLast("aggregator", HttpObjectAggregator(1024 * 1024 * 5))
                 ch.pipeline().addLast("chunked", ChunkedWriteHandler())
-                ch.pipeline().addLast("logging", FilterLoggingHandler())
+                ch.pipeline().addLast("logging", FilterLoggingHandler(log))
                 ch.pipeline().addLast("interceptor", InterceptorHandler())
                 ch.pipeline().addLast("dispatchHandler", DispatchHandler())
-                ch.pipeline().addLast("httpHandler",httpHandler)
+                ch.pipeline().addLast("httpHandler", HttpHandler().apply { registerRouter() })
                 ch.pipeline().addLast("webSocketHandler", WebSocketHandler())
                 ch.pipeline().addLast("fileUploadHandler", FileUploadHandler())
             }
         })
-        val channelFuture = bootstrap.bind(port).syncUninterruptibly().addListener { Log.i("SERVER", "Server Start") }
+        val channelFuture = bootstrap.bind(port).syncUninterruptibly().addListener { Log.i("SERVER", "server start at port $port") }
         channelFuture.channel().closeFuture().addListener {
-            Log.i("SERVER", "Server Shutdown")
+            Log.i("SERVER", "server shutdown")
             bossGroup.shutdownGracefully()
             workerGroup.shutdownGracefully()
         }
