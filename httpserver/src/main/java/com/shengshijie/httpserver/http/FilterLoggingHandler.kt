@@ -8,35 +8,35 @@ import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import java.net.SocketAddress
 
-class FilterLoggingHandler(var log: (level:Int,content: String) -> Unit) : LoggingHandler(LogLevel.TRACE) {
+class FilterLoggingHandler(var log: (level: LogLevel, content: String) -> Unit) : LoggingHandler(LogLevel.TRACE) {
 
     override fun channelRegistered(ctx: ChannelHandlerContext) {
-        log(0,"channelRegistered")
+        log(LogLevel.DEBUG, "channelRegistered")
         ctx.fireChannelRegistered()
     }
 
     override fun channelUnregistered(ctx: ChannelHandlerContext) {
-        log(0,"channelUnregistered")
+        log(LogLevel.DEBUG, "channelUnregistered")
         ctx.fireChannelUnregistered()
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
-        log(0,"channelActive")
+        log(LogLevel.DEBUG, "channelActive")
         ctx.fireChannelActive()
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        log(0,"channelInactive")
+        log(LogLevel.DEBUG, "channelInactive")
         ctx.fireChannelInactive()
     }
 
     override fun userEventTriggered(ctx: ChannelHandlerContext, evt: Any) {
-        log(0,"userEventTriggered")
+        log(LogLevel.DEBUG, "userEventTriggered")
         ctx.fireUserEventTriggered(evt)
     }
 
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
-        log(1,"""<<SEND>> ${ctx.channel()}  
+        log(LogLevel.INFO, """<<SEND>> ${ctx.channel()}  
 $msg""")
         ctx.write(msg, promise)
     }
@@ -47,49 +47,49 @@ $msg""")
 ${HttpHeaderNames.CONTENT_TYPE}: ${request.headers()[HttpHeaderNames.CONTENT_TYPE]}
 ${HttpHeaderNames.CONTENT_LENGTH}: ${request.headers()[HttpHeaderNames.CONTENT_LENGTH]}
 """
-        log(1,"""<<RECV>> ${ctx.channel()}  
+        log(LogLevel.INFO, """<<RECV>> ${ctx.channel()}  
 $log""")
 
         ctx.fireChannelRead(msg)
     }
 
     override fun bind(ctx: ChannelHandlerContext, localAddress: SocketAddress, promise: ChannelPromise) {
-        log(0,"bind localAddress: $localAddress")
+        log(LogLevel.DEBUG, "bind localAddress: $localAddress")
         ctx.bind(localAddress, promise)
     }
 
     override fun connect(ctx: ChannelHandlerContext, remoteAddress: SocketAddress, localAddress: SocketAddress, promise: ChannelPromise) {
-        log(0,"bind remoteAddress: $remoteAddress + localAddress: $localAddress ")
+        log(LogLevel.DEBUG, "bind remoteAddress: $remoteAddress + localAddress: $localAddress ")
         ctx.connect(remoteAddress, localAddress, promise)
     }
 
     override fun disconnect(ctx: ChannelHandlerContext, promise: ChannelPromise) {
-        log(0,"disconnect")
+        log(LogLevel.DEBUG, "disconnect")
         ctx.disconnect(promise)
     }
 
     override fun close(ctx: ChannelHandlerContext, promise: ChannelPromise) {
-        log(0,"close")
+        log(LogLevel.DEBUG, "close")
         ctx.close(promise)
     }
 
     override fun deregister(ctx: ChannelHandlerContext, promise: ChannelPromise) {
-        log(0,"deregister")
+        log(LogLevel.DEBUG, "deregister")
         ctx.deregister(promise)
     }
 
     override fun channelReadComplete(ctx: ChannelHandlerContext) {
-        log(0,"channelReadComplete")
+        log(LogLevel.DEBUG, "channelReadComplete")
         ctx.fireChannelReadComplete()
     }
 
     override fun channelWritabilityChanged(ctx: ChannelHandlerContext) {
-        log(0,"channelWritabilityChanged")
+        log(LogLevel.DEBUG, "channelWritabilityChanged")
         ctx.fireChannelWritabilityChanged()
     }
 
     override fun flush(ctx: ChannelHandlerContext) {
-        log(0,"flush")
+        log(LogLevel.DEBUG, "flush")
         ctx.flush()
     }
 }
