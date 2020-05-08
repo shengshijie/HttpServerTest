@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import com.shengshijie.httpserver.HttpServer
 import com.shengshijie.httpservertest.api.State
 import com.shengshijie.log.HLog
-import io.netty.handler.logging.LogLevel
+import com.shengshijie.server.ServerManager
+import com.shengshijie.server.platform.AndroidServer
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -99,14 +99,17 @@ class MainActivity : AppCompatActivity() {
             }
         })
         findViewById<View>(R.id.startServer).setOnClickListener {
-            HttpServer.start(8888) { l: LogLevel, s: String? ->
-                HLog.log(l.ordinal + 3, s)
+            ServerManager.setServerImpl(AndroidServer.apply {
+                setContext(this@MainActivity)
+                setPackageName("com.shengshijie.httpservertest.controller")
+            })
+            ServerManager.setLogImpl { l, s ->
+                HLog.log(l.ordinal + 2, s)
             }
+            ServerManager.start(8888)
         }
         findViewById<View>(R.id.stopServer).setOnClickListener {
-            HttpServer.stop { l: LogLevel, s: String? ->
-                HLog.log(l.ordinal + 3, s)
-            }
+            ServerManager.stop()
         }
         findViewById<View>(R.id.init).setOnClickListener {
             mainViewModel.init()

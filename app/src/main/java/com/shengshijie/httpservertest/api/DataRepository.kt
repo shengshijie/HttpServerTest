@@ -1,8 +1,8 @@
 package com.shengshijie.httpservertest.api
 
-import com.shengshijie.httpservertest.controller.requset.BaseRequest
-import com.shengshijie.httpservertest.controller.requset.PasswordRequest
-import com.shengshijie.httpservertest.controller.requset.SetAmountRequest
+import com.shengshijie.httpservertest.requset.BaseRequest
+import com.shengshijie.httpservertest.requset.PasswordRequest
+import com.shengshijie.httpservertest.requset.SetAmountRequest
 import com.shengshijie.log.HLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

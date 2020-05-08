@@ -1,8 +1,8 @@
 package com.shengshijie.httpservertest.api
 
-import com.shengshijie.httpservertest.controller.requset.BaseRequest
-import com.shengshijie.httpservertest.controller.requset.PasswordRequest
-import com.shengshijie.httpservertest.controller.requset.SetAmountRequest
+import com.shengshijie.httpservertest.requset.BaseRequest
+import com.shengshijie.httpservertest.requset.PasswordRequest
+import com.shengshijie.httpservertest.requset.SetAmountRequest
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -28,4 +28,4 @@ interface ApiService {
 
 }
 
-const val BASE_URL = "http://192.168.88.154:8888"
+const val BASE_URL = "http://localhost:8888"
