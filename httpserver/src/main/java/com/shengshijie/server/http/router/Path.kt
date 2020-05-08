@@ -4,6 +4,7 @@ import com.shengshijie.server.http.annotation.RequestMapping
 import java.util.*
 
 class Path(requestMapping: RequestMapping, rootRequestMapping: RequestMapping) {
+
     var method: String = requestMapping.method
     var uri: String = rootRequestMapping.value + requestMapping.value
 

@@ -1,6 +1,7 @@
 package com.shengshijie.server.http.router
 
 import com.shengshijie.server.http.annotation.Controller
+import com.shengshijie.server.http.annotation.Param
 import com.shengshijie.server.http.annotation.RequestMapping
 import com.shengshijie.server.http.exception.MethodNotAllowedException
 import com.shengshijie.server.http.exception.PathNotFoundException
@@ -34,7 +35,12 @@ object RouterManager {
                         if (path != null && !functionHandlerMap.containsKey(path)) {
                             val params = arrayListOf<Parameter>()
                             func.parameters.forEach { param ->
-                                params.add(Parameter(param.name, param.type))
+                                val paramAnnotation = param.findAnnotation<Param>()
+                                if (paramAnnotation != null) {
+                                    params.add(Parameter(paramAnnotation.value, param.type))
+                                } else {
+                                    params.add(Parameter(param.name, param.type))
+                                }
                             }
                             functionHandlerMap[path] = Invoker(func, clazz.createInstance(), params)
                         }
