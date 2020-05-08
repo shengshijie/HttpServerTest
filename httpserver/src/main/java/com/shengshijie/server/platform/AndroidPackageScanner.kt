@@ -6,11 +6,12 @@ import com.shengshijie.server.http.scanner.IPackageScanner
 import dalvik.system.DexFile
 import dalvik.system.PathClassLoader
 import java.util.*
+import kotlin.reflect.KClass
 
 class AndroidPackageScanner(private val mContext: Context) : IPackageScanner {
 
-    override fun scan(packageName: String): List<Class<*>> {
-        val classes: MutableList<Class<*>> = ArrayList()
+    override fun scan(packageName: String): List<KClass<*>> {
+        val classes: MutableList<KClass<out Any>> = ArrayList()
         try {
             val classLoader = Thread.currentThread().contextClassLoader as PathClassLoader
             val dex = DexFile(mContext.packageResourcePath)
@@ -18,7 +19,7 @@ class AndroidPackageScanner(private val mContext: Context) : IPackageScanner {
             while (entries.hasMoreElements()) {
                 val entryName = entries.nextElement()
                 if (entryName.contains(packageName)||entryName.contains("com.shengshijie.server.http.controller") ) {
-                    val entryClass = Class.forName(entryName, true, classLoader)
+                    val entryClass = Class.forName(entryName, true, classLoader).kotlin
                     classes.add(entryClass)
                 }
             }

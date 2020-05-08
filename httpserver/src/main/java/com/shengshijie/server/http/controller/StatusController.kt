@@ -13,17 +13,17 @@ import io.netty.handler.codec.http.FullHttpRequest
 class StatusController {
 
     @RequestMapping(value = "status", method = "POST")
-    fun status(request: FullHttpRequest): RawResponse<Any> {
+    fun status(): RawResponse<Any> {
         return ok(Status.getStatus())
     }
 
     @RequestMapping(value = "services", method = "POST")
-    fun services(request: FullHttpRequest): RawResponse<Any> {
+    fun services(): RawResponse<Any> {
         return ok(RouterManager.getRouters())
     }
 
     @RequestMapping(value = "config", method = "POST")
-    fun config(request: FullHttpRequest): RawResponse<Any> {
+    fun config(): RawResponse<Any> {
         return ok(Config())
     }
 

@@ -1,14 +1,15 @@
 package com.shengshijie.server.http.router
 
-import com.shengshijie.server.LogManager
 import com.shengshijie.server.http.annotation.Controller
 import com.shengshijie.server.http.annotation.RequestMapping
 import com.shengshijie.server.http.exception.MethodNotAllowedException
 import com.shengshijie.server.http.exception.PathNotFoundException
 import com.shengshijie.server.http.scanner.IPackageScanner
 import io.netty.handler.codec.http.FullHttpRequest
-import java.lang.reflect.Method
 import java.util.*
+import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.declaredMemberFunctions
+import kotlin.reflect.full.findAnnotation
 
 object RouterManager {
 
@@ -24,26 +25,22 @@ object RouterManager {
 
     fun registerRouter(packageScanner: IPackageScanner, packageName: String) {
         packageScanner.scan(packageName).forEach { clazz ->
-            if (clazz.isAnnotationPresent(Controller::class.java) && clazz.isAnnotationPresent(RequestMapping::class.java)) {
-                val rootRequestMappingAnnotation = clazz.getAnnotation(RequestMapping::class.java)!!
-                val methods: Array<Method> = clazz.declaredMethods
-                methods.forEach {
-                    if (it.isAnnotationPresent(RequestMapping::class.java)) {
-                        val requestMappingAnnotation = it.getAnnotation(RequestMapping::class.java)!!
-                        val path: Path? = Path.make(requestMappingAnnotation, rootRequestMappingAnnotation)
+            val controllerAnnotation = clazz.findAnnotation<Controller>()
+            val requestMappingAnnotation = clazz.findAnnotation<RequestMapping>()
+            if (controllerAnnotation != null && requestMappingAnnotation != null) {
+                clazz.declaredMemberFunctions.forEach { func ->
+                    func.findAnnotation<RequestMapping>()?.apply {
+                        val path: Path? = Path.make(this, requestMappingAnnotation)
                         if (path != null && !functionHandlerMap.containsKey(path)) {
-                            functionHandlerMap[path] = Invoker(it, clazz.newInstance())
+                            val params = arrayListOf<Parameter>()
+                            func.parameters.forEach { param ->
+                                params.add(Parameter(param.name, param.type))
+                            }
+                            functionHandlerMap[path] = Invoker(func, clazz.createInstance(), params)
                         }
                     }
                 }
             }
-        }
-        if (functionHandlerMap.isNotEmpty()) {
-            functionHandlerMap.forEach {
-                LogManager.i(it.key.uri + " -- " + it.key.method)
-            }
-        } else {
-            LogManager.i("routers not found")
         }
     }
 
@@ -52,7 +49,7 @@ object RouterManager {
         var requestPath: Path? = null
         var methodAllowed = false
         for ((path) in functionHandlerMap) {
-            if (path.uri == fullRequest.uri()) {
+            if (path.uri == fullRequest.uri().split("?")[0]) {
                 requestPath = path
                 if (fullRequest.method.name().equals(path.method, ignoreCase = true)) {
                     methodAllowed = true

@@ -1,5 +1,5 @@
 package com.shengshijie.server.http.router
 
-import java.lang.reflect.Method
+import kotlin.reflect.KFunction
 
-class Invoker ( val method: Method, val any: Any)
+class Invoker ( val method: KFunction<*>, val instance: Any?, val args: List<Parameter>)
