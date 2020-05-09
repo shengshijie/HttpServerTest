@@ -19,6 +19,7 @@ object Config {
             "soReuseaddr" to soReuseaddr.toString(),
             "soRcvbuf" to soRcvbuf.toString(),
             "soSndbuf" to soSndbuf.toString(),
+            "maxContentLength" to maxContentLength.toString(),
             "packageNameList" to packageNameList.toString())
 
     var port = 8888
@@ -34,6 +35,7 @@ object Config {
     var soReuseaddr: Boolean = Constant.DEFAULT_SO_REUSEADDR
     var soRcvbuf: Int = Constant.DEFAULT_SO_RCVBUF
     var soSndbuf: Int = Constant.DEFAULT_SO_SNDBUF
+    var maxContentLength: Int = Constant.DEFAULT_MAX_CONTENT_LENGTH
 
     var log: (level: LogLevel, content: String) -> Unit = { l, s -> println(s) }
     var packageNameList: MutableList<String> = mutableListOf()

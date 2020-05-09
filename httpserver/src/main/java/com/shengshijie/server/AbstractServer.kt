@@ -5,7 +5,6 @@ import com.shengshijie.server.http.HttpHandler
 import com.shengshijie.server.http.config.Config
 import com.shengshijie.server.http.router.RouterManager
 import com.shengshijie.server.http.scanner.IPackageScanner
-import com.shengshijie.server.platform.AndroidPackageScanner
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.EventLoopGroup
@@ -16,8 +15,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.handler.codec.http.HttpObjectAggregator
 import io.netty.handler.codec.http.HttpRequestDecoder
 import io.netty.handler.codec.http.HttpResponseEncoder
-import io.netty.handler.logging.LogLevel
-import io.netty.handler.logging.LoggingHandler
 import io.netty.handler.stream.ChunkedWriteHandler
 
 abstract class AbstractServer : IServer {
@@ -54,7 +51,7 @@ abstract class AbstractServer : IServer {
                 public override fun initChannel(ch: SocketChannel) {
                     ch.pipeline().addLast("decoder", HttpRequestDecoder())
                     ch.pipeline().addLast("encoder", HttpResponseEncoder())
-                    ch.pipeline().addLast("aggregator", HttpObjectAggregator(1024 * 1024 * 5))
+                    ch.pipeline().addLast("aggregator", HttpObjectAggregator(mConfig.maxContentLength))
                     ch.pipeline().addLast("chunked", ChunkedWriteHandler())
                     ch.pipeline().addLast("logging", FilterLoggingHandler())
                     ch.pipeline().addLast("httpHandler", HttpHandler())

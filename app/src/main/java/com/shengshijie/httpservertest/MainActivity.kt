@@ -1,10 +1,12 @@
 package com.shengshijie.httpservertest
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.shengshijie.httpservertest.api.State
+import com.shengshijie.httpservertest.java.TestActivity
 import com.shengshijie.log.HLog
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.config.Config
@@ -129,6 +131,9 @@ class MainActivity : AppCompatActivity() {
         }
         findViewById<View>(R.id.destroy).setOnClickListener {
             mainViewModel.destroy()
+        }
+        findViewById<View>(R.id.java).setOnClickListener {
+            startActivity(Intent(this,TestActivity::class.java))
         }
     }
 }

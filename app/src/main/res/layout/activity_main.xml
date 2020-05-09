@@ -61,4 +61,10 @@
         android:layout_height="wrap_content"
         android:text="destroy" />
 
+    <Button
+        android:id="@+id/java"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="java" />
+
 </LinearLayout>

@@ -12,5 +12,6 @@ object Constant {
 
     const val DEFAULT_SO_RCVBUF = 2048
     const val DEFAULT_SO_SNDBUF = 2048
+    const val DEFAULT_MAX_CONTENT_LENGTH = 1024 * 1024 * 5
 
 }
