@@ -24,8 +24,8 @@ object RouterManager {
         return routerList
     }
 
-    fun registerRouter(packageScanner: IPackageScanner, packageName: String) {
-        packageScanner.scan(packageName).forEach { clazz ->
+    fun registerRouter(packageScanner: IPackageScanner, packageNameList: List<String>) {
+        packageScanner.scan(packageNameList).forEach { clazz ->
             val controllerAnnotation = clazz.findAnnotation<Controller>()
             val requestMappingAnnotation = clazz.findAnnotation<RequestMapping>()
             if (controllerAnnotation != null && requestMappingAnnotation != null) {

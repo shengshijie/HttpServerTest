@@ -7,7 +7,9 @@ import androidx.lifecycle.Observer
 import com.shengshijie.httpservertest.api.State
 import com.shengshijie.log.HLog
 import com.shengshijie.server.ServerManager
+import com.shengshijie.server.http.config.Config
 import com.shengshijie.server.platform.AndroidServer
+import io.netty.handler.logging.LogLevel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -99,14 +101,13 @@ class MainActivity : AppCompatActivity() {
             }
         })
         findViewById<View>(R.id.startServer).setOnClickListener {
-            ServerManager.setServerImpl(AndroidServer.apply {
-                setContext(this@MainActivity)
-                setPackageName("com.shengshijie.httpservertest.controller")
+            ServerManager.start(Config.apply {
+                server = AndroidServer.setContext(this@MainActivity)
+                port = 8888
+                debug =true
+                logLevel = LogLevel.INFO
+                packageNameList = arrayListOf("com.shengshijie.httpservertest.controller")
             })
-            ServerManager.setLogImpl { l, s ->
-                HLog.log(l.ordinal + 2, s)
-            }
-            ServerManager.start(8888)
         }
         findViewById<View>(R.id.stopServer).setOnClickListener {
             ServerManager.stop()

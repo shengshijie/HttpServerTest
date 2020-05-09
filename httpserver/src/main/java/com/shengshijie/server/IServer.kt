@@ -1,8 +1,10 @@
 package com.shengshijie.server
 
+import com.shengshijie.server.http.config.Config
+
 interface IServer {
 
-    fun start(port: Int)
+    fun start(config: Config)
 
     fun stop()
 

@@ -4,6 +4,6 @@ import kotlin.reflect.KClass
 
 interface IPackageScanner {
 
-    fun scan(packageName: String): List<KClass<*>>
+    fun scan(packageNameList: List<String>): List<KClass<*>>
 
 }

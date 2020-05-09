@@ -11,14 +11,16 @@ object HttpRequestUtil {
 
     fun getParameterMap(request: HttpRequest): MutableMap<String, MutableList<String>?> {
         var paramMap: MutableMap<String, MutableList<String>?> = mutableMapOf()
-        val method = request.method()
-        if (HttpMethod.GET == method) {
-            val uri = request.uri()
-            val queryDecoder = QueryStringDecoder(uri, CharsetUtil.UTF_8)
-            paramMap = queryDecoder.parameters()
-        } else if (HttpMethod.POST == method) {
-            val fullRequest = request as FullHttpRequest
-            paramMap = getPostParamMap(fullRequest)
+        when (request.method()) {
+            HttpMethod.GET -> {
+                val uri = request.uri()
+                val queryDecoder = QueryStringDecoder(uri, CharsetUtil.UTF_8)
+                paramMap = queryDecoder.parameters()
+            }
+            HttpMethod.POST -> {
+                val fullRequest = request as FullHttpRequest
+                paramMap = getPostParamMap(fullRequest)
+            }
         }
         return paramMap
     }
@@ -37,8 +39,7 @@ object HttpRequestUtil {
                         PrimitiveTypeUtil.isPriArrayType(value) -> {
                             val length = Array.getLength(value)
                             for (i in 0 until length) {
-                                val arrayItem = Array.get(value, i).toString()
-                                valueList?.add(arrayItem)
+                                valueList?.add(Array.get(value, i).toString())
                             }
                             paramMap[key] = valueList
                         }

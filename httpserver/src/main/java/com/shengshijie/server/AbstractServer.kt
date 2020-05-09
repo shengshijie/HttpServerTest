@@ -2,6 +2,7 @@ package com.shengshijie.server
 
 import com.shengshijie.server.http.FilterLoggingHandler
 import com.shengshijie.server.http.HttpHandler
+import com.shengshijie.server.http.config.Config
 import com.shengshijie.server.http.router.RouterManager
 import com.shengshijie.server.http.scanner.IPackageScanner
 import com.shengshijie.server.platform.AndroidPackageScanner
@@ -16,6 +17,7 @@ import io.netty.handler.codec.http.HttpObjectAggregator
 import io.netty.handler.codec.http.HttpRequestDecoder
 import io.netty.handler.codec.http.HttpResponseEncoder
 import io.netty.handler.logging.LogLevel
+import io.netty.handler.logging.LoggingHandler
 import io.netty.handler.stream.ChunkedWriteHandler
 
 abstract class AbstractServer : IServer {
@@ -23,29 +25,31 @@ abstract class AbstractServer : IServer {
     private var bossGroup: EventLoopGroup? = null
     private var workerGroup: EventLoopGroup? = null
     private var running: Boolean = false
+    private var mConfig: Config = Config
 
     abstract fun getPackageScanner(): IPackageScanner
 
-    abstract fun getPackageName():String
-
-    @ExperimentalStdlibApi
-    override fun start(port: Int) {
+    override fun start(config: Config) {
+        mConfig = config
+        LogManager.setLogImpl(mConfig.log)
         if (running) {
-            LogManager.i( "server is already running")
+            LogManager.i("server is already running")
             return
         }
-        RouterManager.registerRouter(getPackageScanner(),getPackageName())
+        if (Config.debug) mConfig.packageNameList.add("com.shengshijie.server.http.controller")
+        RouterManager.registerRouter(getPackageScanner(), mConfig.packageNameList)
         try {
             val bootstrap = ServerBootstrap()
             bossGroup = NioEventLoopGroup()
             workerGroup = NioEventLoopGroup()
             bootstrap.group(bossGroup, workerGroup)
             bootstrap.channel(NioServerSocketChannel::class.java)
-            bootstrap.childOption(NioChannelOption.TCP_NODELAY, true)
-            bootstrap.childOption(NioChannelOption.SO_REUSEADDR, true)
-            bootstrap.childOption(NioChannelOption.SO_KEEPALIVE, false)
-            bootstrap.childOption(NioChannelOption.SO_RCVBUF, 2048)
-            bootstrap.childOption(NioChannelOption.SO_SNDBUF, 2048)
+            bootstrap.childOption(NioChannelOption.SO_BACKLOG, mConfig.backlog)
+            bootstrap.childOption(NioChannelOption.TCP_NODELAY, mConfig.tcpNodelay)
+            bootstrap.childOption(NioChannelOption.SO_REUSEADDR, mConfig.soReuseaddr)
+            bootstrap.childOption(NioChannelOption.SO_KEEPALIVE, mConfig.soKeepalive)
+            bootstrap.childOption(NioChannelOption.SO_RCVBUF, mConfig.soRcvbuf)
+            bootstrap.childOption(NioChannelOption.SO_SNDBUF, mConfig.soSndbuf)
             bootstrap.childHandler(object : ChannelInitializer<SocketChannel>() {
                 public override fun initChannel(ch: SocketChannel) {
                     ch.pipeline().addLast("decoder", HttpRequestDecoder())
@@ -56,20 +60,20 @@ abstract class AbstractServer : IServer {
                     ch.pipeline().addLast("httpHandler", HttpHandler())
                 }
             })
-            val channelFuture = bootstrap.bind(port).syncUninterruptibly().addListener {   LogManager.i( "server start at port $port") }
+            val channelFuture = bootstrap.bind(mConfig.port).syncUninterruptibly().addListener { LogManager.i("server start at port ${mConfig.port}") }
             running = true
             channelFuture.channel().closeFuture().addListener {
                 bossGroup?.shutdownGracefully()
                 workerGroup?.shutdownGracefully()
             }
         } catch (e: Exception) {
-            LogManager.i( "server start error:" + e.message)
+            LogManager.i("server start error:" + e.message)
         }
     }
 
     override fun stop() {
         if (!running) {
-            LogManager.i( "server is already stop")
+            LogManager.i("server is already stop")
             return
         }
         try {
@@ -78,9 +82,9 @@ abstract class AbstractServer : IServer {
             bossGroup = null
             workerGroup = null
             running = false
-            LogManager.i( "server stop")
+            LogManager.i("server stop")
         } catch (e: Exception) {
-            LogManager.i( "server stop error:" + e.message)
+            LogManager.i("server stop error:" + e.message)
         }
     }
 

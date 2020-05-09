@@ -24,7 +24,7 @@ class StatusController {
 
     @RequestMapping(value = "config", method = "POST")
     fun config(): RawResponse<Any> {
-        return ok(Config())
+        return ok(Config.getConfig())
     }
 
 }

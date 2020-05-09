@@ -1,6 +1,7 @@
 package com.shengshijie.server.http
 
 import com.shengshijie.server.LogManager
+import com.shengshijie.server.http.config.Config
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
 import io.netty.handler.codec.http.HttpHeaderNames
@@ -9,7 +10,7 @@ import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import java.net.SocketAddress
 
-class FilterLoggingHandler : LoggingHandler(LogLevel.ERROR) {
+class FilterLoggingHandler : LoggingHandler(Config.logLevel) {
 
     override fun channelRegistered(ctx: ChannelHandlerContext) {
         LogManager.d("channelRegistered")
@@ -37,7 +38,7 @@ class FilterLoggingHandler : LoggingHandler(LogLevel.ERROR) {
     }
 
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
-        LogManager.i("""<<SEND>> ${ctx.channel()}  
+        LogManager.i("""<<RESPONSE>> ${ctx.channel()}  
 $msg""")
         ctx.write(msg, promise)
     }
@@ -48,7 +49,7 @@ $msg""")
 ${HttpHeaderNames.CONTENT_TYPE}: ${request.headers()[HttpHeaderNames.CONTENT_TYPE]}
 ${HttpHeaderNames.CONTENT_LENGTH}: ${request.headers()[HttpHeaderNames.CONTENT_LENGTH]}
 """
-        LogManager.i("""<<RECV>> ${ctx.channel()}  
+        LogManager.i("""<<REQUEST>> ${ctx.channel()}  
 $log""")
 
         ctx.fireChannelRead(msg)

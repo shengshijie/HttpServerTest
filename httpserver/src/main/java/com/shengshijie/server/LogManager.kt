@@ -1,33 +1,34 @@
 package com.shengshijie.server
 
+import com.shengshijie.server.http.config.Config
 import io.netty.handler.logging.LogLevel
 
 object LogManager {
 
-    private var mLog: (level: LogLevel, content: String) -> Unit = { _, _ -> }
+    private var mLog: (level: LogLevel, content: String) -> Unit = { l, s -> println(s) }
 
     fun setLogImpl(log: (level: LogLevel, content: String) -> Unit) {
         mLog = log
     }
 
     fun v(msg: String) {
-        mLog(LogLevel.TRACE, msg)
+        if (Config.logLevel.ordinal <= LogLevel.TRACE.ordinal) mLog(LogLevel.TRACE, msg)
     }
 
     fun d(msg: String) {
-        mLog(LogLevel.DEBUG, msg)
+        if (Config.logLevel.ordinal <= LogLevel.DEBUG.ordinal) mLog(LogLevel.DEBUG, msg)
     }
 
     fun i(msg: String) {
-        mLog(LogLevel.INFO, msg)
+        if (Config.logLevel.ordinal <= LogLevel.INFO.ordinal) mLog(LogLevel.INFO, msg)
     }
 
     fun w(msg: String) {
-        mLog(LogLevel.WARN, msg)
+        if (Config.logLevel.ordinal <= LogLevel.WARN.ordinal) mLog(LogLevel.WARN, msg)
     }
 
     fun e(msg: String) {
-        mLog(LogLevel.ERROR, msg)
+        if (Config.logLevel.ordinal <= LogLevel.ERROR.ordinal) mLog(LogLevel.ERROR, msg)
     }
 
 }
