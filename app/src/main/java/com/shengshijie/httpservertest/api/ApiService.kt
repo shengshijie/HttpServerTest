@@ -8,24 +8,25 @@ import retrofit2.http.*
 
 interface ApiService {
 
-    @POST("pay/init")
+    @POST("api/pay/init")
     suspend fun init(@Body request: BaseRequest): Response<BaseResponse>
 
-    @POST("pay/setAmount")
+    @POST("api/pay/setAmount")
     suspend fun setAmount(@Body request: SetAmountRequest): Response<SetAmountResponse>
 
-    @POST("pay/start")
+    @POST("api/pay/start")
     suspend fun start(@Body request: BaseRequest): Response<BaseResponse>
 
-    @POST("pay/verifyPassword")
+    @POST("api/pay/verifyPassword")
     suspend fun verifyPassword(@Body request: PasswordRequest): Response<BaseResponse>
 
-    @POST("pay/cancel")
+    @POST("api/pay/cancel")
     suspend fun cancel(@Body request: BaseRequest): Response<BaseResponse>
 
-    @POST("pay/destroy")
+    @POST("api/pay/destroy")
     suspend fun destroy(@Body request: BaseRequest): Response<BaseResponse>
 
 }
 
+//const val BASE_URL = "http://192.168.88.137:8888"
 const val BASE_URL = "http://localhost:8888"

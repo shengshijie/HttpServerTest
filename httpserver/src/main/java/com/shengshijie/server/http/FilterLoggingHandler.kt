@@ -1,16 +1,15 @@
 package com.shengshijie.server.http
 
 import com.shengshijie.server.LogManager
-import com.shengshijie.server.http.config.Config
+import com.shengshijie.server.ServerManager
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpRequest
-import io.netty.handler.logging.LogLevel
 import io.netty.handler.logging.LoggingHandler
 import java.net.SocketAddress
 
-class FilterLoggingHandler : LoggingHandler(Config.logLevel) {
+class FilterLoggingHandler : LoggingHandler(ServerManager.mServerConfig.logLevel) {
 
     override fun channelRegistered(ctx: ChannelHandlerContext) {
         LogManager.d("channelRegistered")

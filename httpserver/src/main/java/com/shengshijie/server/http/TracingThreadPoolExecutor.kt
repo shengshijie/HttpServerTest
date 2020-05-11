@@ -1,6 +1,6 @@
 package com.shengshijie.server.http
 
-import com.shengshijie.server.http.controller.Status
+import com.shengshijie.server.ServerManager
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -11,11 +11,11 @@ class TracingThreadPoolExecutor(corePoolSize: Int, maximumPoolSize: Int, workQue
     private val pendingTasks = AtomicInteger()
 
     override fun beforeExecute(t: Thread?, r: Runnable?) {
-        Status.pendingRequestsIncrement()
+        ServerManager.mStatus.pendingRequestsIncrement()
     }
 
     override fun afterExecute(r: Runnable?, t: Throwable?) {
-        Status.pendingRequestsDecrement()
+        ServerManager.mStatus.pendingRequestsDecrement()
     }
 
     fun getPendingTasks(): Int {
@@ -24,7 +24,7 @@ class TracingThreadPoolExecutor(corePoolSize: Int, maximumPoolSize: Int, workQue
 
     init {
         threadFactory = NamedThreadFactory("worker", true)
-        Status.workerPool(this)
+        ServerManager.mStatus.workerPool(this)
     }
 
 }

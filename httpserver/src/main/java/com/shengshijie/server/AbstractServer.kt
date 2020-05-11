@@ -2,9 +2,8 @@ package com.shengshijie.server
 
 import com.shengshijie.server.http.FilterLoggingHandler
 import com.shengshijie.server.http.HttpHandler
-import com.shengshijie.server.http.config.Config
-import com.shengshijie.server.http.router.RouterManager
 import com.shengshijie.server.http.scanner.IPackageScanner
+import com.shengshijie.server.http.utils.ExceptionUtils
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.EventLoopGroup
@@ -21,67 +20,56 @@ abstract class AbstractServer : IServer {
 
     private var bossGroup: EventLoopGroup? = null
     private var workerGroup: EventLoopGroup? = null
-    private var running: Boolean = false
-    private var mConfig: Config = Config
 
     abstract fun getPackageScanner(): IPackageScanner
 
-    override fun start(config: Config) {
-        mConfig = config
-        LogManager.setLogImpl(mConfig.log)
-        if (running) {
-            LogManager.i("server is already running")
-            return
-        }
-        if (Config.debug) mConfig.packageNameList.add("com.shengshijie.server.http.controller")
-        RouterManager.registerRouter(getPackageScanner(), mConfig.packageNameList)
+    override fun start(result: (Result<String>) -> Unit) {
+        LogManager.setLogImpl(ServerManager.mServerConfig.log)
+        if (ServerManager.mServerConfig.debug) ServerManager.mServerConfig.packageNameList.add("com.shengshijie.server.http.controller")
+        ServerManager.mRouterManager.registerRouter(getPackageScanner(), ServerManager.mServerConfig.packageNameList)
         try {
             val bootstrap = ServerBootstrap()
             bossGroup = NioEventLoopGroup()
             workerGroup = NioEventLoopGroup()
             bootstrap.group(bossGroup, workerGroup)
             bootstrap.channel(NioServerSocketChannel::class.java)
-            bootstrap.childOption(NioChannelOption.SO_BACKLOG, mConfig.backlog)
-            bootstrap.childOption(NioChannelOption.TCP_NODELAY, mConfig.tcpNodelay)
-            bootstrap.childOption(NioChannelOption.SO_REUSEADDR, mConfig.soReuseaddr)
-            bootstrap.childOption(NioChannelOption.SO_KEEPALIVE, mConfig.soKeepalive)
-            bootstrap.childOption(NioChannelOption.SO_RCVBUF, mConfig.soRcvbuf)
-            bootstrap.childOption(NioChannelOption.SO_SNDBUF, mConfig.soSndbuf)
+            bootstrap.childOption(NioChannelOption.SO_BACKLOG, ServerManager.mServerConfig.backlog)
+            bootstrap.childOption(NioChannelOption.TCP_NODELAY, ServerManager.mServerConfig.tcpNodelay)
+            bootstrap.childOption(NioChannelOption.SO_REUSEADDR, ServerManager.mServerConfig.soReuseaddr)
+            bootstrap.childOption(NioChannelOption.SO_KEEPALIVE, ServerManager.mServerConfig.soKeepalive)
+            bootstrap.childOption(NioChannelOption.SO_RCVBUF, ServerManager.mServerConfig.soRcvbuf)
+            bootstrap.childOption(NioChannelOption.SO_SNDBUF, ServerManager.mServerConfig.soSndbuf)
             bootstrap.childHandler(object : ChannelInitializer<SocketChannel>() {
                 public override fun initChannel(ch: SocketChannel) {
                     ch.pipeline().addLast("decoder", HttpRequestDecoder())
                     ch.pipeline().addLast("encoder", HttpResponseEncoder())
-                    ch.pipeline().addLast("aggregator", HttpObjectAggregator(mConfig.maxContentLength))
+                    ch.pipeline().addLast("aggregator", HttpObjectAggregator(ServerManager.mServerConfig.maxContentLength))
                     ch.pipeline().addLast("chunked", ChunkedWriteHandler())
                     ch.pipeline().addLast("logging", FilterLoggingHandler())
                     ch.pipeline().addLast("httpHandler", HttpHandler())
                 }
             })
-            val channelFuture = bootstrap.bind(mConfig.port).syncUninterruptibly().addListener { LogManager.i("server start at port ${mConfig.port}") }
-            running = true
+            val channelFuture = bootstrap.bind(ServerManager.mServerConfig.port).syncUninterruptibly().addListener {
+                result(Result.success("server start at port ${ServerManager.mServerConfig.port}"))
+            }
             channelFuture.channel().closeFuture().addListener {
                 bossGroup?.shutdownGracefully()
                 workerGroup?.shutdownGracefully()
             }
         } catch (e: Exception) {
-            LogManager.i("server start error:" + e.message)
+            result(Result.error("server start error:" + ExceptionUtils.toString(e)))
         }
     }
 
-    override fun stop() {
-        if (!running) {
-            LogManager.i("server is already stop")
-            return
-        }
+    override fun stop(result: (Result<String>) -> Unit) {
         try {
             bossGroup?.shutdownGracefully()
             workerGroup?.shutdownGracefully()
             bossGroup = null
             workerGroup = null
-            running = false
-            LogManager.i("server stop")
+            result(Result.success("server stop success"))
         } catch (e: Exception) {
-            LogManager.i("server stop error:" + e.message)
+            result(Result.error("server stop error:" + ExceptionUtils.toString(e)))
         }
     }
 

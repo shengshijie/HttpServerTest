@@ -4,7 +4,7 @@ import android.content.Context
 import com.shengshijie.server.AbstractServer
 import com.shengshijie.server.http.scanner.IPackageScanner
 
-object AndroidServer : AbstractServer() {
+class AndroidServer : AbstractServer() {
 
     private var mContext: Context? = null
 

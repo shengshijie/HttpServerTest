@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 
 
-object Status {
+class Status {
 
     fun getStatus(): HashMap<String, String> = hashMapOf(
             "connections" to getConnections().toString(),

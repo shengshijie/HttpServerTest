@@ -1,13 +1,12 @@
 package com.shengshijie.server.http
 
 import com.shengshijie.server.LogManager
+import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.ChannelHolder.set
 import com.shengshijie.server.http.ChannelHolder.unset
-import com.shengshijie.server.http.controller.Status
 import com.shengshijie.server.http.exception.MethodNotAllowedException
 import com.shengshijie.server.http.exception.PathNotFoundException
 import com.shengshijie.server.http.router.Invoker
-import com.shengshijie.server.http.router.RouterManager
 import com.shengshijie.server.http.utils.ExceptionUtils
 import com.shengshijie.server.http.utils.HttpRequestUtil
 import io.netty.channel.ChannelFutureListener
@@ -21,18 +20,19 @@ import io.netty.handler.timeout.IdleStateEvent
 import io.netty.util.ReferenceCountUtil
 import java.util.concurrent.LinkedBlockingQueue
 
-
 @Sharable
 class HttpHandler : ChannelInboundHandlerAdapter() {
 
-    private val executor = TracingThreadPoolExecutor(100, 100, LinkedBlockingQueue(10000))
+    private val executor = TracingThreadPoolExecutor(ServerManager.mServerConfig.corePoolSize,
+            ServerManager.mServerConfig.maximumPoolSize,
+            LinkedBlockingQueue(ServerManager.mServerConfig.workQueueCapacity))
 
     override fun channelReadComplete(ctx: ChannelHandlerContext) {
         ctx.flush()
     }
 
     override fun channelRead(ctx: ChannelHandlerContext, any: Any) {
-        Status.totalRequestsIncrement()
+        ServerManager.mStatus.totalRequestsIncrement()
         val request: FullHttpRequest? = any as? FullHttpRequest
         request?.let {
             executor.execute {
@@ -49,7 +49,7 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
         return try {
             set(ctx.channel())
             var args = arrayListOf<Any>()
-            invoker = RouterManager.matchRouter(fullRequest)
+            invoker = ServerManager.mRouterManager.matchRouter(fullRequest)
             invoker?.args?.let {
                 args = arrayListOf()
                 for (i in 1 until it.size) {
@@ -66,14 +66,17 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
                 HttpResponse.make(HttpResponseStatus.INTERNAL_SERVER_ERROR)
             }
         } catch (error: MethodNotAllowedException) {
+            LogManager.i(ExceptionUtils.toString(error))
             HttpResponse.make(HttpResponseStatus.METHOD_NOT_ALLOWED)
         } catch (error: PathNotFoundException) {
+            LogManager.i(ExceptionUtils.toString(error))
             HttpResponse.make(HttpResponseStatus.NOT_FOUND)
         } catch (error: Exception) {
+            LogManager.i(ExceptionUtils.toString(error))
             HttpResponse.makeError(error)
         } finally {
             unset()
-            Status.handledRequestsIncrement()
+            ServerManager.mStatus.handledRequestsIncrement()
         }
     }
 
@@ -85,11 +88,11 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
     }
 
     override fun channelActive(ctx: ChannelHandlerContext?) {
-        Status.connectionIncrement()
+        ServerManager.mStatus.connectionIncrement()
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext?) {
-        Status.connectionDecrement()
+        ServerManager.mStatus.connectionDecrement()
     }
 
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {

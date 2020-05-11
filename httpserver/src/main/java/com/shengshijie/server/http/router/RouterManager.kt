@@ -12,7 +12,7 @@ import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
 
-object RouterManager {
+class RouterManager {
 
     private val functionHandlerMap = HashMap<Path, Invoker>()
 

@@ -9,7 +9,7 @@ import com.shengshijie.httpservertest.api.State
 import com.shengshijie.httpservertest.java.TestActivity
 import com.shengshijie.log.HLog
 import com.shengshijie.server.ServerManager
-import com.shengshijie.server.http.config.Config
+import com.shengshijie.server.http.config.ServerConfig
 import com.shengshijie.server.platform.AndroidServer
 import io.netty.handler.logging.LogLevel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -103,22 +103,22 @@ class MainActivity : AppCompatActivity() {
             }
         })
         findViewById<View>(R.id.startServer).setOnClickListener {
-            ServerManager.start(Config.apply {
-                server = AndroidServer.setContext(this@MainActivity)
-                port = 8888
-                debug =true
-                logLevel = LogLevel.INFO
-                packageNameList = arrayListOf("com.shengshijie.httpservertest.controller")
-            })
+            ServerManager.start(ServerConfig.Builder()
+                    .setPort(8888)
+                    .setServer(AndroidServer().setContext(this@MainActivity))
+                    .setDebug(true)
+                    .setLogLevel(LogLevel.INFO)
+                    .setPackageNameList(arrayListOf("com.shengshijie.httpservertest.controller"))
+                    .build()) { result -> HLog.e(result.toString()) }
         }
         findViewById<View>(R.id.stopServer).setOnClickListener {
-            ServerManager.stop()
+            ServerManager.stop() { result -> HLog.e(result.toString()) }
         }
         findViewById<View>(R.id.init).setOnClickListener {
             mainViewModel.init()
         }
         findViewById<View>(R.id.setAmount).setOnClickListener {
-            mainViewModel.setAmount(0.01)
+            mainViewModel.setAmount(1.00)
         }
         findViewById<View>(R.id.start).setOnClickListener {
             mainViewModel.start()
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
             mainViewModel.destroy()
         }
         findViewById<View>(R.id.java).setOnClickListener {
-            startActivity(Intent(this,TestActivity::class.java))
+            startActivity(Intent(this, TestActivity::class.java))
         }
     }
 }
