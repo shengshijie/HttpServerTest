@@ -2,7 +2,8 @@ package com.shengshijie.server.http.config
 
 import com.shengshijie.server.IServer
 import com.shengshijie.server.log.LogLevel
-import com.shengshijie.server.platform.defaultplatform.DefaultServer
+import com.shengshijie.server.log.LogManager
+import com.shengshijie.server.platform.java.JavaServer
 
 class ServerConfig(mBuilder: Builder) {
 
@@ -75,11 +76,11 @@ class ServerConfig(mBuilder: Builder) {
             private set
         internal var mWorkQueueCapacity: Int = Constant.DEFAULT_WORK_QUEUE_CAPACITY
             private set
-        internal var mLog: (level: LogLevel, content: String) -> Unit = { l, s -> println(s) }
+        internal var mLog: (level: LogLevel, content: String) -> Unit = LogManager.defaultLog
             private set
         internal var mPackageNameList: MutableList<String> = mutableListOf()
             private set
-        internal var mServer: IServer = DefaultServer()
+        internal var mServer: IServer = JavaServer()
             private set
 
         fun setPort(port: Int): Builder {

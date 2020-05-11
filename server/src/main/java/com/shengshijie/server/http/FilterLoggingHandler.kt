@@ -37,7 +37,7 @@ class FilterLoggingHandler : LoggingHandler(ServerManager.mServerConfig.logLevel
     }
 
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
-        LogManager.i("""<<RESPONSE>> ${ctx.channel()}  
+        LogManager.i("""{RESPONSE} ${ctx.channel()}  
 $msg""")
         ctx.write(msg, promise)
     }
@@ -48,7 +48,7 @@ $msg""")
 ${HttpHeaderNames.CONTENT_TYPE}: ${request.headers()[HttpHeaderNames.CONTENT_TYPE]}
 ${HttpHeaderNames.CONTENT_LENGTH}: ${request.headers()[HttpHeaderNames.CONTENT_LENGTH]}
 """
-        LogManager.i("""<<REQUEST>> ${ctx.channel()}  
+        LogManager.i("""{REQUEST} ${ctx.channel()}  
 $log""")
 
         ctx.fireChannelRead(msg)

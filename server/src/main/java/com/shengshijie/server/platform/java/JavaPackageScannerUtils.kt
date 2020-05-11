@@ -1,4 +1,4 @@
-package com.shengshijie.server.platform.defaultplatform
+package com.shengshijie.server.platform.java
 
 import com.shengshijie.server.http.utils.ExceptionUtils
 import com.shengshijie.server.log.LogManager
@@ -11,7 +11,7 @@ import java.util.jar.JarInputStream
 import kotlin.collections.ArrayList
 import kotlin.reflect.KClass
 
-object PackageScanner {
+object JavaPackageScannerUtils {
 
     fun scan(packageName: String): List<KClass<*>> {
         val classes: MutableList<KClass<*>> = LinkedList()

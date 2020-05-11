@@ -4,7 +4,9 @@ import com.shengshijie.server.ServerManager
 
 object LogManager {
 
-    private var mLog: (level: LogLevel, content: String) -> Unit = { l, s -> println(s) }
+    val defaultLog: (level: LogLevel, content: String) -> Unit = { l, s -> println("<${l.name}> $s") }
+
+    private var mLog: (level: LogLevel, content: String) -> Unit = defaultLog
 
     fun setLogImpl(log: (level: LogLevel, content: String) -> Unit) {
         mLog = log

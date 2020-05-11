@@ -1,4 +1,4 @@
-package com.shengshijie.server.platform.defaultplatform
+package com.shengshijie.server.platform.java
 
 import java.io.File
 import java.util.*

@@ -8,6 +8,10 @@ enum class LogLevel(private val nettyLogLevel: io.netty.handler.logging.LogLevel
     WARN(io.netty.handler.logging.LogLevel.WARN),
     ERROR(io.netty.handler.logging.LogLevel.ERROR);
 
+    fun toAndroidLogLevel(): Int {
+        return ordinal + 2
+    }
+
     fun toNettyLogLevel(): io.netty.handler.logging.LogLevel {
         return nettyLogLevel
     }
