@@ -4,10 +4,8 @@ import android.content.Context
 import com.shengshijie.server.AbstractServer
 import com.shengshijie.server.http.scanner.IPackageScanner
 
-class AndroidServer(mContext: Context) : AbstractServer() {
+class AndroidServer(private val mContext: Context) : AbstractServer() {
 
-    var mPackageScanner: IPackageScanner = AndroidPackageScanner(mContext)
-
-    override fun getPackageScanner(): IPackageScanner = mPackageScanner
+    override fun getPackageScanner(): IPackageScanner = AndroidPackageScanner(mContext)
 
 }

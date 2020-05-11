@@ -66,13 +66,13 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
                 HttpResponse.make(HttpResponseStatus.INTERNAL_SERVER_ERROR)
             }
         } catch (error: MethodNotAllowedException) {
-            LogManager.i(ExceptionUtils.toString(error))
+            LogManager.e(ExceptionUtils.toString(error))
             HttpResponse.make(HttpResponseStatus.METHOD_NOT_ALLOWED)
         } catch (error: PathNotFoundException) {
-            LogManager.i(ExceptionUtils.toString(error))
+            LogManager.e(ExceptionUtils.toString(error))
             HttpResponse.make(HttpResponseStatus.NOT_FOUND)
         } catch (error: Exception) {
-            LogManager.i(ExceptionUtils.toString(error))
+            LogManager.e(ExceptionUtils.toString(error))
             HttpResponse.makeError(error)
         } finally {
             unset()

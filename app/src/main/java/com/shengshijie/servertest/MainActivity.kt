@@ -5,13 +5,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import com.shengshijie.servertest.api.State
-import com.shengshijie.servertest.java.TestActivity
 import com.shengshijie.log.HLog
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.config.ServerConfig
 import com.shengshijie.server.log.LogLevel
 import com.shengshijie.server.platform.android.AndroidServer
+import com.shengshijie.servertest.api.State
+import com.shengshijie.servertest.java.TestActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -109,10 +109,10 @@ class MainActivity : AppCompatActivity() {
                     .setDebug(true)
                     .setLogLevel(LogLevel.INFO)
                     .setPackageNameList(arrayListOf("com.shengshijie.servertest.controller"))
-                    .build()) { result -> HLog.e(result.toString()) }
+                    .build())
         }
         findViewById<View>(R.id.stopServer).setOnClickListener {
-            ServerManager.stop() { result -> HLog.e(result.toString()) }
+            ServerManager.stop()
         }
         findViewById<View>(R.id.init).setOnClickListener {
             mainViewModel.init()
