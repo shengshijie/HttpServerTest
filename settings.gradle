@@ -1,3 +1,3 @@
 rootProject.name='HttpServerTest'
 include ':app'
-include ':httpserver'
+include ':server'
