@@ -8,16 +8,6 @@ class HttpResponse private constructor(status: HttpResponseStatus, buffer: ByteB
 
     private var content: String? = null
 
-    override fun toString(): String {
-
-        val builder = StringBuilder()
-        builder.append(protocolVersion().toString()).append(" ").append(status().toString()).append("\n")
-        builder.append(HttpHeaderNames.CONTENT_TYPE).append(": ").append(headers()[HttpHeaderNames.CONTENT_TYPE]).append("\n")
-        builder.append(HttpHeaderNames.CONTENT_LENGTH).append(": ").append(headers()[HttpHeaderNames.CONTENT_LENGTH]).append("\n")
-        builder.append("content-body").append(": ").append(content).append("\n")
-        return builder.toString()
-    }
-
     companion object {
 
         private val BYTE_BUF_ALLOCATOR = PooledByteBufAllocator(false)

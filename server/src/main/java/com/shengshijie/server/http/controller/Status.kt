@@ -80,7 +80,7 @@ class Status {
         return activePoolSize
     }
 
-    fun workerPool(workerPool: TracingThreadPoolExecutor?) {
+    fun workerPool(workerPool: TracingThreadPoolExecutor) {
         this.workerPool = workerPool
     }
 

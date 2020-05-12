@@ -1,6 +1,5 @@
 package com.shengshijie.server.http
 
-import com.shengshijie.server.log.LogManager
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.ChannelHolder.set
 import com.shengshijie.server.http.ChannelHolder.unset
@@ -9,6 +8,7 @@ import com.shengshijie.server.http.exception.PathNotFoundException
 import com.shengshijie.server.http.router.Invoker
 import com.shengshijie.server.http.utils.ExceptionUtils
 import com.shengshijie.server.http.utils.HttpRequestUtil
+import com.shengshijie.server.log.LogManager
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
@@ -36,18 +36,17 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
         val request: FullHttpRequest? = any as? FullHttpRequest
         request?.let {
             executor.execute {
-                val parameterMap = HttpRequestUtil.getParameterMap(request)
-                val response = handleHttpRequest(ctx, request, parameterMap)
-                ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE)
+                ctx.writeAndFlush(handleHttpRequest(ctx, request)).addListener(ChannelFutureListener.CLOSE)
                 ReferenceCountUtil.release(request)
             }
         }
     }
 
-    private fun handleHttpRequest(ctx: ChannelHandlerContext, fullRequest: FullHttpRequest, parameterMap: MutableMap<String, MutableList<String>?>): FullHttpResponse {
+    private fun handleHttpRequest(ctx: ChannelHandlerContext, fullRequest: FullHttpRequest): FullHttpResponse {
         val invoker: Invoker?
         return try {
             set(ctx.channel())
+            val parameterMap = HttpRequestUtil.getParameterMap(fullRequest)
             var args = arrayListOf<Any>()
             invoker = ServerManager.mRouterManager.matchRouter(fullRequest)
             invoker?.args?.let {

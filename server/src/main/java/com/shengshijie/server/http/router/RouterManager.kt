@@ -57,7 +57,7 @@ class RouterManager {
         for ((path) in functionHandlerMap) {
             if (path.uri == fullRequest.uri().split("?")[0]) {
                 requestPath = path
-                if (fullRequest.method.name().equals(path.method, ignoreCase = true)) {
+                if (fullRequest.method().name().equals(path.method, ignoreCase = true)) {
                     methodAllowed = true
                 }
             }
