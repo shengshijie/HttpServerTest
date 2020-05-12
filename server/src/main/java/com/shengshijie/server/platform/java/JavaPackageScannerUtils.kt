@@ -27,7 +27,7 @@ object JavaPackageScannerUtils {
                 }
             }
         } catch (e: Exception) {
-            LogManager.w(ExceptionUtils.toString(e))
+            LogManager.w("scan error: ${ExceptionUtils.toString(e)}")
         }
         return classes
     }

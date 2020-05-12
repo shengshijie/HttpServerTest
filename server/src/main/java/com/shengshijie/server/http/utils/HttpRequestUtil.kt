@@ -13,13 +13,10 @@ object HttpRequestUtil {
         var paramMap: MutableMap<String, MutableList<String>?> = mutableMapOf()
         when (request.method()) {
             HttpMethod.GET -> {
-                val uri = request.uri()
-                val queryDecoder = QueryStringDecoder(uri, CharsetUtil.UTF_8)
-                paramMap = queryDecoder.parameters()
+                paramMap = QueryStringDecoder(request.uri(), CharsetUtil.UTF_8).parameters()
             }
             HttpMethod.POST -> {
-                val fullRequest = request as FullHttpRequest
-                paramMap = getPostParamMap(fullRequest)
+                paramMap = getPostParamMap(request as FullHttpRequest)
             }
         }
         return paramMap
@@ -66,9 +63,7 @@ object HttpRequestUtil {
                 }
             }
             HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString() -> {
-                val jsonStr = fullRequest.content().toString(CharsetUtil.UTF_8)
-                val queryDecoder = QueryStringDecoder(jsonStr, false)
-                paramMap = queryDecoder.parameters()
+                paramMap = QueryStringDecoder(fullRequest.content().toString(CharsetUtil.UTF_8), false).parameters()
             }
         }
         return paramMap

@@ -1,6 +1,8 @@
 package com.shengshijie.server.http.config
 
 import com.shengshijie.server.IServer
+import com.shengshijie.server.http.serialize.GsonSerialize
+import com.shengshijie.server.http.serialize.Serialize
 import com.shengshijie.server.log.LogLevel
 import com.shengshijie.server.log.LogManager
 import com.shengshijie.server.platform.java.JavaServer
@@ -43,6 +45,7 @@ class ServerConfig(mBuilder: Builder) {
     internal var log: (level: LogLevel, content: String) -> Unit = mBuilder.mLog
     internal var packageNameList: MutableList<String> = mBuilder.mPackageNameList
     internal var server: IServer = mBuilder.mServer
+    internal var serialize: Serialize = mBuilder.mSerialize
 
     companion object {
         internal var defaultServerConfig: ServerConfig = Builder().build()
@@ -81,6 +84,8 @@ class ServerConfig(mBuilder: Builder) {
         internal var mPackageNameList: MutableList<String> = mutableListOf()
             private set
         internal var mServer: IServer = JavaServer()
+            private set
+        internal var mSerialize: Serialize = GsonSerialize()
             private set
 
         fun setPort(port: Int): Builder {
@@ -161,6 +166,11 @@ class ServerConfig(mBuilder: Builder) {
 
         fun setServer(server: IServer): Builder {
             mServer = server
+            return this
+        }
+
+        fun setSerialize(serialize: Serialize): Builder {
+            mSerialize = serialize
             return this
         }
 

@@ -108,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                     .setServer(AndroidServer(this@MainActivity))
                     .setDebug(true)
                     .setLog { level, content -> HLog.log(level.toAndroidLogLevel(), content) }
-                    .setLogLevel(LogLevel.DEBUG)
+                    .setLogLevel(LogLevel.INFO)
                     .setPackageNameList(arrayListOf("com.shengshijie.servertest.controller"))
                     .build())
         }

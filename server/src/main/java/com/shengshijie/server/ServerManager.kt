@@ -4,16 +4,18 @@ import com.shengshijie.server.http.config.Constant
 import com.shengshijie.server.http.config.ServerConfig
 import com.shengshijie.server.http.controller.Status
 import com.shengshijie.server.http.router.RouterManager
+import com.shengshijie.server.http.serialize.Serialize
 import com.shengshijie.server.log.LogManager
 import kotlin.concurrent.thread
 
 object ServerManager {
 
     private var mServer: IServer? = null
-    internal var mServerConfig: ServerConfig = ServerConfig.defaultServerConfig
-    internal var mRouterManager: RouterManager = RouterManager()
-    internal var mStatus: Status = Status()
     private var running: Boolean = false
+    internal var mServerConfig: ServerConfig = ServerConfig.defaultServerConfig
+    internal lateinit var mRouterManager: RouterManager
+    internal lateinit var mStatus: Status
+    internal lateinit var mSerialize: Serialize
 
     @Volatile
     private var start = false
@@ -37,6 +39,7 @@ object ServerManager {
             mRouterManager = RouterManager()
             mStatus = Status()
             mServer = mServerConfig.server
+            mSerialize = mServerConfig.serialize
             if (mServerConfig.debug) mServerConfig.packageNameList.add(Constant.DEBUG_CONTROLLER_PACKAGE_NAME)
             mRouterManager.registerRouter(mServerConfig.server.getPackageScanner(), mServerConfig.packageNameList)
             mServer?.start { r ->

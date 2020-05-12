@@ -33,46 +33,42 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
 
     override fun channelRead(ctx: ChannelHandlerContext, any: Any) {
         ServerManager.mStatus.totalRequestsIncrement()
-        val request: FullHttpRequest? = any as? FullHttpRequest
-        request?.let {
-            executor.execute {
-                ctx.writeAndFlush(handleHttpRequest(ctx, request)).addListener(ChannelFutureListener.CLOSE)
-                ReferenceCountUtil.release(request)
-            }
+        executor.execute {
+            ctx.writeAndFlush(handleHttpRequest(ctx, any)).addListener(ChannelFutureListener.CLOSE)
+            ReferenceCountUtil.release(any)
         }
     }
 
-    private fun handleHttpRequest(ctx: ChannelHandlerContext, fullRequest: FullHttpRequest): FullHttpResponse {
+    private fun handleHttpRequest(ctx: ChannelHandlerContext, any: Any): FullHttpResponse {
         val invoker: Invoker?
         return try {
             set(ctx.channel())
-            val parameterMap = HttpRequestUtil.getParameterMap(fullRequest)
-            var args = arrayListOf<Any>()
-            invoker = ServerManager.mRouterManager.matchRouter(fullRequest)
+            val request: FullHttpRequest = any as FullHttpRequest
+            val parameterMap = HttpRequestUtil.getParameterMap(request)
+            val args = arrayListOf<Any>()
+            invoker = ServerManager.mRouterManager.matchRouter(request)
             invoker?.args?.let {
-                args = arrayListOf()
                 for (i in 1 until it.size) {
                     parameterMap[it[i].name]?.apply {
                         args.add(this[0])
                     }
                 }
             }
-            val argsArray = args.toArray()
-            val rawResponse = invoker?.method?.call(invoker.instance, *argsArray)
+            val rawResponse = invoker?.method?.call(invoker.instance, *(args.toArray()))
             if (rawResponse is RawResponse<*>) {
-                HttpResponse.ok(rawResponse.toJSONString())
+                HttpResponse.ok(ServerManager.mSerialize.serialize(rawResponse))
             } else {
                 HttpResponse.make(HttpResponseStatus.INTERNAL_SERVER_ERROR)
             }
-        } catch (error: MethodNotAllowedException) {
-            LogManager.e(ExceptionUtils.toString(error))
+        } catch (e: MethodNotAllowedException) {
+            LogManager.e("http handler error: ${ExceptionUtils.toString(e)}")
             HttpResponse.make(HttpResponseStatus.METHOD_NOT_ALLOWED)
-        } catch (error: PathNotFoundException) {
-            LogManager.e(ExceptionUtils.toString(error))
+        } catch (e: PathNotFoundException) {
+            LogManager.e("http handler error: ${ExceptionUtils.toString(e)}")
             HttpResponse.make(HttpResponseStatus.NOT_FOUND)
-        } catch (error: Exception) {
-            LogManager.e(ExceptionUtils.toString(error))
-            HttpResponse.makeError(error)
+        } catch (e: Exception) {
+            LogManager.e("http handler error: ${ExceptionUtils.toString(e)}")
+            HttpResponse.makeError(e)
         } finally {
             unset()
             ServerManager.mStatus.handledRequestsIncrement()
@@ -95,7 +91,7 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
     }
 
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        LogManager.e(ExceptionUtils.toString(cause))
+        LogManager.e("http handler exception: ${ExceptionUtils.toString(cause)}")
         ctx.channel().close()
     }
 

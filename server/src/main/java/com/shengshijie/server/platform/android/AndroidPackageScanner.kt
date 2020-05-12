@@ -2,6 +2,8 @@ package com.shengshijie.server.platform.android
 
 import android.content.Context
 import com.shengshijie.server.http.scanner.IPackageScanner
+import com.shengshijie.server.http.utils.ExceptionUtils
+import com.shengshijie.server.log.LogManager
 import dalvik.system.DexFile
 import dalvik.system.PathClassLoader
 import java.util.*
@@ -24,8 +26,8 @@ class AndroidPackageScanner(private val mContext: Context) : IPackageScanner {
                 }
 
             }
-        } catch (ignore: Exception) {
-            //
+        } catch (e: Exception) {
+            LogManager.w("scan error: ${ExceptionUtils.toString(e)}")
         }
         return classes
     }

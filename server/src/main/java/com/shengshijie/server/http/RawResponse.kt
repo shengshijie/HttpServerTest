@@ -1,16 +1,6 @@
 package com.shengshijie.server.http
 
-import com.google.gson.GsonBuilder
-
-class RawResponse<T>(private val code: Int, private val message: String, private val data: T) {
-
-    fun toJSONString(): String {
-        return GsonBuilder().create().toJson(this)
-    }
-
-    override fun toString(): String {
-        return "RawResponse(code=$code, message='$message', data=$data)"
-    }
+data class RawResponse<T>(private val code: Int, private val message: String, private val data: T) {
 
     companion object {
 

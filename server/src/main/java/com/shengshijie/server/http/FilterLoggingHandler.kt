@@ -4,9 +4,11 @@ import com.shengshijie.server.ServerManager
 import com.shengshijie.server.log.LogManager
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
+import io.netty.handler.codec.http.FullHttpRequest
+import io.netty.handler.codec.http.FullHttpResponse
 import io.netty.handler.codec.http.HttpHeaderNames
-import io.netty.handler.codec.http.HttpRequest
 import io.netty.handler.logging.LoggingHandler
+import io.netty.util.CharsetUtil
 import java.net.SocketAddress
 
 class FilterLoggingHandler : LoggingHandler(ServerManager.mServerConfig.logLevel.toNettyLogLevel()) {
@@ -37,20 +39,30 @@ class FilterLoggingHandler : LoggingHandler(ServerManager.mServerConfig.logLevel
     }
 
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
-        LogManager.i("""{RESPONSE} ${ctx.channel()}  
-$msg""")
+        val response = msg as? FullHttpResponse
+        response?.let {
+            val log = """
+                ${ctx.channel()}
+                ${response.protocolVersion()}
+                ${HttpHeaderNames.CONTENT_TYPE}: ${response.headers()[HttpHeaderNames.CONTENT_TYPE]}
+                ${HttpHeaderNames.CONTENT_LENGTH}: ${response.headers()[HttpHeaderNames.CONTENT_LENGTH]}
+                ${response.content().toString(CharsetUtil.UTF_8)}"""
+            LogManager.i("""{RESPONSE} $log""")
+        }
         ctx.write(msg, promise)
     }
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
-        val request = msg as HttpRequest
-        val log = """${request.method()} ${request.uri()} ${request.protocolVersion()}
-${HttpHeaderNames.CONTENT_TYPE}: ${request.headers()[HttpHeaderNames.CONTENT_TYPE]}
-${HttpHeaderNames.CONTENT_LENGTH}: ${request.headers()[HttpHeaderNames.CONTENT_LENGTH]}
-"""
-        LogManager.i("""{REQUEST} ${ctx.channel()}  
-$log""")
-
+        val request = msg as? FullHttpRequest
+        request?.let {
+            val log = """
+                ${ctx.channel()}
+                ${request.method()} ${request.uri()} ${request.protocolVersion()}
+                ${HttpHeaderNames.CONTENT_TYPE}: ${request.headers()[HttpHeaderNames.CONTENT_TYPE]}
+                ${HttpHeaderNames.CONTENT_LENGTH}: ${request.headers()[HttpHeaderNames.CONTENT_LENGTH]}
+                ${request.content().toString(CharsetUtil.UTF_8)}"""
+            LogManager.i("""{REQUEST} $log""")
+        }
         ctx.fireChannelRead(msg)
     }
 
