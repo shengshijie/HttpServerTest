@@ -1,3 +1,3 @@
 package com.shengshijie.server.http.exception
 
-class PathNotFoundException : Exception("path not found")
+class PathNotFoundException(msg:String) : Exception(msg)

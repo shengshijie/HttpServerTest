@@ -1,5 +1,6 @@
 package com.shengshijie.server.platform.java
 
+import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.utils.ExceptionUtils
 import com.shengshijie.server.log.LogManager
 import java.io.File
@@ -27,7 +28,7 @@ object JavaPackageScannerUtils {
                 }
             }
         } catch (e: Exception) {
-            LogManager.w("scan error: ${ExceptionUtils.toString(e)}")
+            ServerManager.mLogManager.w("scan error: ${ExceptionUtils.toString(e)}")
         }
         return classes
     }

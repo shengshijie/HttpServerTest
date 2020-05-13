@@ -1,7 +1,6 @@
 package com.shengshijie.server.http
 
 import com.shengshijie.server.ServerManager
-import com.shengshijie.server.log.LogManager
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelPromise
 import io.netty.handler.codec.http.FullHttpRequest
@@ -14,27 +13,27 @@ import java.net.SocketAddress
 class FilterLoggingHandler : LoggingHandler(ServerManager.mServerConfig.logLevel.toNettyLogLevel()) {
 
     override fun channelRegistered(ctx: ChannelHandlerContext) {
-        LogManager.d("channelRegistered")
+        ServerManager.mLogManager.d("channelRegistered")
         ctx.fireChannelRegistered()
     }
 
     override fun channelUnregistered(ctx: ChannelHandlerContext) {
-        LogManager.d("channelUnregistered")
+        ServerManager.mLogManager.d("channelUnregistered")
         ctx.fireChannelUnregistered()
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
-        LogManager.d("channelActive")
+        ServerManager.mLogManager.d("channelActive")
         ctx.fireChannelActive()
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        LogManager.d("channelInactive")
+        ServerManager.mLogManager.d("channelInactive")
         ctx.fireChannelInactive()
     }
 
     override fun userEventTriggered(ctx: ChannelHandlerContext, evt: Any) {
-        LogManager.d("userEventTriggered")
+        ServerManager.mLogManager.d("userEventTriggered")
         ctx.fireUserEventTriggered(evt)
     }
 
@@ -47,7 +46,7 @@ class FilterLoggingHandler : LoggingHandler(ServerManager.mServerConfig.logLevel
                 ${HttpHeaderNames.CONTENT_TYPE}: ${response.headers()[HttpHeaderNames.CONTENT_TYPE]}
                 ${HttpHeaderNames.CONTENT_LENGTH}: ${response.headers()[HttpHeaderNames.CONTENT_LENGTH]}
                 ${response.content().toString(CharsetUtil.UTF_8)}"""
-            LogManager.i("""{RESPONSE} $log""")
+            ServerManager.mLogManager.i("""{RESPONSE} $log""")
         }
         ctx.write(msg, promise)
     }
@@ -61,48 +60,48 @@ class FilterLoggingHandler : LoggingHandler(ServerManager.mServerConfig.logLevel
                 ${HttpHeaderNames.CONTENT_TYPE}: ${request.headers()[HttpHeaderNames.CONTENT_TYPE]}
                 ${HttpHeaderNames.CONTENT_LENGTH}: ${request.headers()[HttpHeaderNames.CONTENT_LENGTH]}
                 ${request.content().toString(CharsetUtil.UTF_8)}"""
-            LogManager.i("""{REQUEST} $log""")
+            ServerManager.mLogManager.i("""{REQUEST} $log""")
         }
         ctx.fireChannelRead(msg)
     }
 
     override fun bind(ctx: ChannelHandlerContext, localAddress: SocketAddress, promise: ChannelPromise) {
-        LogManager.d("bind localAddress: $localAddress")
+        ServerManager.mLogManager.d("bind localAddress: $localAddress")
         ctx.bind(localAddress, promise)
     }
 
     override fun connect(ctx: ChannelHandlerContext, remoteAddress: SocketAddress, localAddress: SocketAddress, promise: ChannelPromise) {
-        LogManager.d("bind remoteAddress: $remoteAddress + localAddress: $localAddress ")
+        ServerManager.mLogManager.d("bind remoteAddress: $remoteAddress + localAddress: $localAddress ")
         ctx.connect(remoteAddress, localAddress, promise)
     }
 
     override fun disconnect(ctx: ChannelHandlerContext, promise: ChannelPromise) {
-        LogManager.d("disconnect")
+        ServerManager.mLogManager.d("disconnect")
         ctx.disconnect(promise)
     }
 
     override fun close(ctx: ChannelHandlerContext, promise: ChannelPromise) {
-        LogManager.d("close")
+        ServerManager.mLogManager.d("close")
         ctx.close(promise)
     }
 
     override fun deregister(ctx: ChannelHandlerContext, promise: ChannelPromise) {
-        LogManager.d("deregister")
+        ServerManager.mLogManager.d("deregister")
         ctx.deregister(promise)
     }
 
     override fun channelReadComplete(ctx: ChannelHandlerContext) {
-        LogManager.d("channelReadComplete")
+        ServerManager.mLogManager.d("channelReadComplete")
         ctx.fireChannelReadComplete()
     }
 
     override fun channelWritabilityChanged(ctx: ChannelHandlerContext) {
-        LogManager.d("channelWritabilityChanged")
+        ServerManager.mLogManager.d("channelWritabilityChanged")
         ctx.fireChannelWritabilityChanged()
     }
 
     override fun flush(ctx: ChannelHandlerContext) {
-        LogManager.d("flush")
+        ServerManager.mLogManager.d("flush")
         ctx.flush()
     }
 }

@@ -13,6 +13,7 @@ object ServerManager {
     private var mServer: IServer? = null
     private var running: Boolean = false
     internal var mServerConfig: ServerConfig = ServerConfig.defaultServerConfig
+    internal var mLogManager: LogManager = LogManager()
     internal lateinit var mRouterManager: RouterManager
     internal lateinit var mStatus: Status
     internal lateinit var mSerialize: Serialize
@@ -30,12 +31,12 @@ object ServerManager {
             start = true
             if (running) {
                 result(Result.success("server is already running"))
-                LogManager.i("server is already running")
+                mLogManager.i("server is already running")
                 start = false
                 return@thread
             }
             mServerConfig = serverConfig
-            LogManager.setLogImpl(mServerConfig.log)
+            mLogManager.setLog(mServerConfig.log)
             mRouterManager = RouterManager()
             mStatus = Status()
             mServer = mServerConfig.server
@@ -47,11 +48,11 @@ object ServerManager {
                 when (r) {
                     is Result.Success -> {
                         running = true
-                        LogManager.i(r.data)
+                        mLogManager.i(r.data)
                     }
                     is Result.Error -> {
                         running = false
-                        LogManager.e(r.message)
+                        mLogManager.e(r.message)
 
                     }
                 }
@@ -65,7 +66,7 @@ object ServerManager {
     fun stop(result: (Result<String>) -> Unit = {}) {
         if (!running) {
             result(Result.success("server is already stop"))
-            LogManager.i("server is already stop")
+            mLogManager.i("server is already stop")
             return
         }
         mServer?.stop { r ->
@@ -73,11 +74,11 @@ object ServerManager {
             when (r) {
                 is Result.Success -> {
                     running = false
-                    LogManager.i(r.data)
+                    mLogManager.i(r.data)
                 }
                 is Result.Error -> {
                     running = true
-                    LogManager.e(r.message)
+                    mLogManager.e(r.message)
                 }
             }
         }

@@ -2,13 +2,11 @@ package com.shengshijie.server.log
 
 import com.shengshijie.server.ServerManager
 
-object LogManager {
-
-    val defaultLog: (level: LogLevel, content: String) -> Unit = { l, s -> println("<${l.name}> $s") }
+class LogManager {
 
     private var mLog: (level: LogLevel, content: String) -> Unit = defaultLog
 
-    fun setLogImpl(log: (level: LogLevel, content: String) -> Unit) {
+    fun setLog(log: (level: LogLevel, content: String) -> Unit) {
         mLog = log
     }
 
@@ -30,6 +28,10 @@ object LogManager {
 
     fun e(msg: String) {
         if (ServerManager.mServerConfig.logLevel <= LogLevel.ERROR) mLog(LogLevel.ERROR, msg)
+    }
+
+    companion object{
+        val defaultLog: (level: LogLevel, content: String) -> Unit = { l, s -> println("<${l.name}> $s") }
     }
 
 }

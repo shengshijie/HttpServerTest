@@ -4,6 +4,7 @@ import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.ChannelHolder.set
 import com.shengshijie.server.http.ChannelHolder.unset
 import com.shengshijie.server.http.exception.MethodNotAllowedException
+import com.shengshijie.server.http.exception.MissingParameterException
 import com.shengshijie.server.http.exception.PathNotFoundException
 import com.shengshijie.server.http.router.Invoker
 import com.shengshijie.server.http.utils.ExceptionUtils
@@ -46,12 +47,14 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
             val request: FullHttpRequest = any as FullHttpRequest
             val parameterMap = HttpRequestUtil.getParameterMap(request)
             val args = arrayListOf<Any>()
+            val missingArgs = arrayListOf<String?>()
             invoker = ServerManager.mRouterManager.matchRouter(request)
             invoker?.args?.let {
                 for (i in 1 until it.size) {
-                    parameterMap[it[i].name]?.apply {
-                        args.add(this[0])
-                    }
+                    parameterMap[it[i].name]?.apply { args.add(this[0]) } ?: missingArgs.add(it[i].name)
+                }
+                if (missingArgs.isNotEmpty()) {
+                    throw MissingParameterException("missing parameter: [${missingArgs.joinToString()}]")
                 }
             }
             val rawResponse = invoker?.method?.call(invoker.instance, *(args.toArray()))
@@ -60,14 +63,8 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
             } else {
                 HttpResponse.make(HttpResponseStatus.INTERNAL_SERVER_ERROR)
             }
-        } catch (e: MethodNotAllowedException) {
-            LogManager.e("http handler error: ${ExceptionUtils.toString(e)}")
-            HttpResponse.make(HttpResponseStatus.METHOD_NOT_ALLOWED)
-        } catch (e: PathNotFoundException) {
-            LogManager.e("http handler error: ${ExceptionUtils.toString(e)}")
-            HttpResponse.make(HttpResponseStatus.NOT_FOUND)
         } catch (e: Exception) {
-            LogManager.e("http handler error: ${ExceptionUtils.toString(e)}")
+            ServerManager.mLogManager.e("http handler error: ${ExceptionUtils.toString(e)}")
             HttpResponse.makeError(e)
         } finally {
             unset()
@@ -91,7 +88,7 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
     }
 
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        LogManager.e("http handler exception: ${ExceptionUtils.toString(cause)}")
+        ServerManager.mLogManager.e("http handler exception: ${ExceptionUtils.toString(cause)}")
         ctx.channel().close()
     }
 

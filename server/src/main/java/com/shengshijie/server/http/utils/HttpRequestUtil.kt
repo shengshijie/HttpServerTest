@@ -24,7 +24,8 @@ object HttpRequestUtil {
 
     private fun getPostParamMap(fullRequest: FullHttpRequest): MutableMap<String, MutableList<String>?> {
         var paramMap: MutableMap<String, MutableList<String>?> = HashMap()
-        when (fullRequest.headers()[HttpHeaderNames.CONTENT_TYPE].split(";").toTypedArray()[0]) {
+        val contentType = fullRequest.headers()[HttpHeaderNames.CONTENT_TYPE] ?: return paramMap
+        when (contentType.split(";").toTypedArray()[0]) {
             HttpHeaderValues.APPLICATION_JSON.toString() -> {
                 for ((key, value) in JSON.parseObject(fullRequest.content().toString(CharsetUtil.UTF_8))) {
                     var valueList: MutableList<String>? = if (paramMap.containsKey(key)) paramMap[key] else ArrayList()

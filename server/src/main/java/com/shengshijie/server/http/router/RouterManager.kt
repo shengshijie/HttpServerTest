@@ -52,23 +52,25 @@ class RouterManager {
 
     @Throws(PathNotFoundException::class, MethodNotAllowedException::class)
     fun matchRouter(fullRequest: FullHttpRequest): Invoker? {
-        var requestPath: Path? = null
+        val requestPath = fullRequest.uri().split("?")[0]
+        val requestMethod = fullRequest.method().name()
+        var path: Path? = null
         var methodAllowed = false
-        for ((path) in functionHandlerMap) {
-            if (path.uri == fullRequest.uri().split("?")[0]) {
-                requestPath = path
-                if (fullRequest.method().name().equals(path.method, ignoreCase = true)) {
+        for ((p) in functionHandlerMap) {
+            if (p.uri == requestPath) {
+                path = p
+                if (requestMethod.equals(path.method, ignoreCase = true)) {
                     methodAllowed = true
                 }
             }
         }
-        if (requestPath == null) {
-            throw PathNotFoundException()
+        if (path == null) {
+            throw PathNotFoundException("path not found: [${requestPath}]")
         }
         if (!methodAllowed) {
-            throw MethodNotAllowedException()
+            throw MethodNotAllowedException("method not allowed: [${requestMethod}]")
         }
-        return functionHandlerMap[requestPath]
+        return functionHandlerMap[path]
     }
 
 }

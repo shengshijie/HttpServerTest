@@ -1,6 +1,7 @@
 package com.shengshijie.server.platform.android
 
 import android.content.Context
+import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.scanner.IPackageScanner
 import com.shengshijie.server.http.utils.ExceptionUtils
 import com.shengshijie.server.log.LogManager
@@ -27,7 +28,7 @@ class AndroidPackageScanner(private val mContext: Context) : IPackageScanner {
 
             }
         } catch (e: Exception) {
-            LogManager.w("scan error: ${ExceptionUtils.toString(e)}")
+            ServerManager.mLogManager.w("scan error: ${ExceptionUtils.toString(e)}")
         }
         return classes
     }
