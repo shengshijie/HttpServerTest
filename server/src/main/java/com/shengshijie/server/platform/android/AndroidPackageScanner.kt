@@ -25,7 +25,6 @@ class AndroidPackageScanner(private val mContext: Context) : IPackageScanner {
                         classes.add(entryClass)
                     }
                 }
-
             }
         } catch (e: Exception) {
             ServerManager.mLogManager.w("scan error: ${ExceptionUtils.toString(e)}")

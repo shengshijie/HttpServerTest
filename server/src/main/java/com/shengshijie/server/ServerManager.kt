@@ -53,7 +53,6 @@ object ServerManager {
                     is Result.Error -> {
                         running = false
                         mLogManager.e(r.message)
-
                     }
                 }
             } ?: throw RuntimeException("server need an impl")

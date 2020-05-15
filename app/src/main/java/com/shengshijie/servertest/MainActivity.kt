@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.shengshijie.log.HLog
+import com.shengshijie.log.LogbackImpl
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.config.ServerConfig
 import com.shengshijie.server.log.LogLevel
@@ -23,7 +24,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        HLog.init(this, "")
+        HLog.setLogImpl(LogbackImpl().apply {
+            file = true
+            db = true
+            socket = true
+            socketHost = "192.168.88.191"
+            socketPort = 4569
+        })
+        HLog.init(application, application.getExternalFilesDir(null)?.absolutePath, "RFT")
         mainViewModel.initResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
