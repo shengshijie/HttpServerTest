@@ -3,28 +3,23 @@ package com.shengshijie.server.http
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.ChannelHolder.set
 import com.shengshijie.server.http.ChannelHolder.unset
-import com.shengshijie.server.http.exception.MethodNotAllowedException
-import com.shengshijie.server.http.exception.MissingParameterException
-import com.shengshijie.server.http.exception.PathNotFoundException
-import com.shengshijie.server.http.router.Invoker
 import com.shengshijie.server.http.utils.ExceptionUtils
-import com.shengshijie.server.http.utils.HttpRequestUtil
-import com.shengshijie.server.log.LogManager
+import io.netty.buffer.ByteBufUtil
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
-import io.netty.handler.codec.http.FullHttpRequest
-import io.netty.handler.codec.http.FullHttpResponse
-import io.netty.handler.codec.http.HttpResponseStatus
+import io.netty.handler.codec.http.*
 import io.netty.handler.timeout.IdleStateEvent
 import io.netty.util.ReferenceCountUtil
 import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+
 
 @Sharable
 class HttpHandler : ChannelInboundHandlerAdapter() {
 
-    private val executor = TracingThreadPoolExecutor(ServerManager.mServerConfig.corePoolSize,
+    private val executor: ThreadPoolExecutor? = TracingThreadPoolExecutor(ServerManager.mServerConfig.corePoolSize,
             ServerManager.mServerConfig.maximumPoolSize,
             LinkedBlockingQueue(ServerManager.mServerConfig.workQueueCapacity))
 
@@ -34,40 +29,30 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
 
     override fun channelRead(ctx: ChannelHandlerContext, any: Any) {
         ServerManager.mStatus.totalRequestsIncrement()
+        if (executor == null) {
+            handleHttpRequest(ctx, any)
+            return
+        }
         executor.execute {
-            ctx.writeAndFlush(handleHttpRequest(ctx, any)).addListener(ChannelFutureListener.CLOSE)
-            ReferenceCountUtil.release(any)
+            handleHttpRequest(ctx, any)
         }
     }
 
-    private fun handleHttpRequest(ctx: ChannelHandlerContext, any: Any): FullHttpResponse {
-        val invoker: Invoker?
-        return try {
+    private fun handleHttpRequest(ctx: ChannelHandlerContext, any: Any) {
+        val request = HttpRequestImpl(any as FullHttpRequest)
+        val response = HttpResponseImpl(DefaultFullHttpResponse(request.protocolVersion(), HttpResponseStatus.OK))
+        try {
             set(ctx.channel())
-            val request: FullHttpRequest = any as FullHttpRequest
-            val parameterMap = HttpRequestUtil.getParameterMap(request)
-            val args = arrayListOf<Any>()
-            val missingArgs = arrayListOf<String?>()
-            invoker = ServerManager.mRouterManager.matchRouter(request)
-            invoker?.args?.let {
-                for (i in 1 until it.size) {
-                    parameterMap[it[i].name]?.apply { args.add(this[0]) } ?: missingArgs.add(it[i].name)
-                }
-                if (missingArgs.isNotEmpty()) {
-                    throw MissingParameterException("missing parameter: [${missingArgs.joinToString()}]")
-                }
-            }
-            val rawResponse = invoker?.method?.call(invoker.instance, *(args.toArray()))
-            if (rawResponse is RawResponse<*>) {
-                HttpResponse.ok(ServerManager.mSerialize.serialize(rawResponse))
-            } else {
-                HttpResponse.make(HttpResponseStatus.INTERNAL_SERVER_ERROR)
-            }
+            ServerManager.mRouterManager.matchRouter(request).call(request, response)
         } catch (e: Exception) {
-            ServerManager.mLogManager.e("http handler error: ${ExceptionUtils.toString(e)}")
-            HttpResponse.makeError(e)
+            ServerManager.mLogManager.e("server error: ${ExceptionUtils.toString(e)}")
+            response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR)
+            ByteBufUtil.writeUtf8(response.content(), "http handler error: ${e.message}")
         } finally {
             unset()
+            HttpUtil.setContentLength(response.fullHttpResponse, response.content().readableBytes().toLong())
+            ctx.channel().writeAndFlush(response.fullHttpResponse)?.addListener(ChannelFutureListener.CLOSE)
+            ReferenceCountUtil.release(any)
             ServerManager.mStatus.handledRequestsIncrement()
         }
     }

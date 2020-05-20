@@ -36,50 +36,34 @@ class MainViewModel : ViewModel() {
     val destroyResponseLiveData: LiveData<State<BaseResponse>>
         get() = _destroyResponseLiveData
 
-    fun init() {
+    fun get2() {
         viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).init().collect {
+            DataRepository(RetrofitClient.getService()).get2().collect {
                 _initResponseLiveData.value = it
             }
         }
     }
 
-    fun setAmount(amount: Double) {
+    fun get1(amount: Double) {
         viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).setAmount(amount).collect {
+            DataRepository(RetrofitClient.getService()).get1(amount).collect {
                 _setAmountResponseLiveData.value = it
             }
         }
     }
 
-    fun start() {
+    fun post2() {
         viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).start().collect {
+            DataRepository(RetrofitClient.getService()).post2().collect {
                 _startResponseLiveData.value = it
             }
         }
     }
 
-    fun verifyPassword(password: String) {
+    fun post1(name: String,age: String,amount: String) {
         viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).verifyPassword(password).collect {
+            DataRepository(RetrofitClient.getService()).post1(name, age, amount).collect {
                 _verifyPasswordResponseLiveData.value = it
-            }
-        }
-    }
-
-    fun cancel() {
-        viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).cancel().collect {
-                _cancelResponseLiveData.value = it
-            }
-        }
-    }
-
-    fun destroy() {
-        viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).destroy().collect {
-                _destroyResponseLiveData.value = it
             }
         }
     }

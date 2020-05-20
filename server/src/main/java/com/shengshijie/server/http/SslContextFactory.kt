@@ -9,9 +9,9 @@ import javax.net.ssl.SSLException
 object SslContextFactory {
 
     fun createSslContext(): SslContext {
-         return try {
+        return try {
             val cert = SelfSignedCertificate()
-            SslContextBuilder.forServer(cert.key(), cert.cert()).build()
+            SslContextBuilder.forServer(cert.certificate(), cert.privateKey()).build()
         } catch (e: CertificateException) {
             throw RuntimeException(e)
         } catch (e: SSLException) {

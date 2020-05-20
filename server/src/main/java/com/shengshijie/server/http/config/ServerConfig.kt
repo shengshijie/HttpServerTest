@@ -10,6 +10,9 @@ import com.shengshijie.server.platform.java.JavaServer
 class ServerConfig(mBuilder: Builder) {
 
     fun getConfig(): HashMap<String, String> = hashMapOf(
+            "enableSSL" to enableSSL.toString(),
+            "sign" to sign.toString(),
+            "salt" to salt,
             "debug" to debug.toString(),
             "logLevel" to logLevel.toString(),
             "port" to port.toString(),
@@ -25,6 +28,9 @@ class ServerConfig(mBuilder: Builder) {
             "maxContentLength" to maxContentLength.toString(),
             "packageNameList" to packageNameList.toString())
 
+    internal var enableSSL = mBuilder.mEnableSSL
+    internal var sign = mBuilder.mSign
+    internal var salt = mBuilder.mSalt
     internal var port = mBuilder.mPort
     internal var debug: Boolean = mBuilder.mDebug
     internal var logLevel: LogLevel = mBuilder.mLogLevel
@@ -53,6 +59,12 @@ class ServerConfig(mBuilder: Builder) {
 
     class Builder {
 
+        internal var mEnableSSL = Constant.DEFAULT_ENABLE_SSL
+            private set
+        internal var mSign = Constant.DEFAULT_ENABLE_SIGN
+            private set
+        internal var mSalt = Constant.DEFAULT_SALT
+            private set
         internal var mPort: Int = 8888
             private set
         internal var mDebug: Boolean = true
@@ -87,6 +99,21 @@ class ServerConfig(mBuilder: Builder) {
             private set
         internal var mSerialize: Serialize = GsonSerialize()
             private set
+
+        fun setEnableSSL(enableSSL: Boolean): Builder {
+            mEnableSSL = enableSSL
+            return this
+        }
+
+        fun setSalt(salt: String): Builder {
+            mSalt = salt
+            return this
+        }
+
+        fun setSign(sign: Boolean): Builder {
+            mSign = sign
+            return this
+        }
 
         fun setPort(port: Int): Builder {
             mPort = port

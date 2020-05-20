@@ -25,9 +25,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         HLog.setLogImpl(LogbackImpl().apply {
-            file = true
-            db = true
-            socket = true
+            file = false
+            db = false
+            socket = false
             socketHost = "192.168.88.191"
             socketPort = 4569
         })
@@ -115,6 +115,7 @@ class MainActivity : AppCompatActivity() {
                     .setPort(8888)
                     .setServer(AndroidServer(this@MainActivity))
                     .setDebug(true)
+                    .setSign(true)
                     .setLog { level, content -> HLog.log(level.toAndroidLogLevel(), content) }
                     .setLogLevel(LogLevel.INFO)
                     .setPackageNameList(arrayListOf("com.shengshijie.servertest.controller"))
@@ -123,23 +124,17 @@ class MainActivity : AppCompatActivity() {
         findViewById<View>(R.id.stopServer).setOnClickListener {
             ServerManager.stop()
         }
-        findViewById<View>(R.id.init).setOnClickListener {
-            mainViewModel.init()
+        findViewById<View>(R.id.get2).setOnClickListener {
+            mainViewModel.get2()
         }
-        findViewById<View>(R.id.setAmount).setOnClickListener {
-            mainViewModel.setAmount(1.00)
+        findViewById<View>(R.id.get1).setOnClickListener {
+            mainViewModel.get1(1.00)
         }
-        findViewById<View>(R.id.start).setOnClickListener {
-            mainViewModel.start()
+        findViewById<View>(R.id.post2).setOnClickListener {
+            mainViewModel.post2()
         }
-        findViewById<View>(R.id.verifyPassword).setOnClickListener {
-            mainViewModel.verifyPassword("123456")
-        }
-        findViewById<View>(R.id.cancel).setOnClickListener {
-            mainViewModel.cancel()
-        }
-        findViewById<View>(R.id.destroy).setOnClickListener {
-            mainViewModel.destroy()
+        findViewById<View>(R.id.post1).setOnClickListener {
+            mainViewModel.post1("西西", "10", "1.00")
         }
         findViewById<View>(R.id.java).setOnClickListener {
             startActivity(Intent(this, TestActivity::class.java))

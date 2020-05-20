@@ -6,10 +6,10 @@ import com.shengshijie.server.http.annotation.Param;
 import com.shengshijie.server.http.annotation.RequestMapping;
 
 @Controller
-@RequestMapping(value = "/test")
+@RequestMapping(value = "/java")
 public class TestController {
 
-    @RequestMapping(value = "/hhh", method = "GET")
+    @RequestMapping(value = "/get1", method = "GET")
     public RawResponse<Object> test(@Param(value = "age") String age) {
         return RawResponse.ok("age:" + age);
     }

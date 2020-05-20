@@ -1,9 +1,7 @@
 package com.shengshijie.servertest.api
 
-import com.shengshijie.servertest.requset.BaseRequest
-import com.shengshijie.servertest.requset.PasswordRequest
-import com.shengshijie.servertest.requset.SetAmountRequest
 import com.shengshijie.log.HLog
+import com.shengshijie.servertest.requset.Post2Request
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +13,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
 
 @ExperimentalCoroutinesApi
-class DataRepository constructor(private val apiService: ApiService) {
+class DataRepository constructor(private val apiService: TestService) {
 
     private suspend inline fun <T : BaseResponse> createFlow(crossinline request: suspend () -> Response<T>): Flow<State<T>> {
         return flow {
@@ -37,28 +35,24 @@ class DataRepository constructor(private val apiService: ApiService) {
                 }
     }
 
-    suspend fun init() = createFlow {
-        apiService.init(BaseRequest())
+    suspend fun get1(amount: Double) = createFlow {
+        apiService.get1(amount)
     }
 
-    suspend fun setAmount(amount: Double) = createFlow {
-        apiService.setAmount(SetAmountRequest().apply { this.amount = amount })
+    suspend fun get2() = createFlow {
+        apiService.get2()
     }
 
-    suspend fun start() = createFlow {
-        apiService.start(BaseRequest())
+    suspend fun post1(name: String,age: String,amount: String) = createFlow {
+        apiService.post1(Post2Request().apply {
+            this.name = name
+            this.age = age
+            this.amount = amount
+        })
     }
 
-    suspend fun verifyPassword(password: String) = createFlow {
-        apiService.verifyPassword(PasswordRequest().apply { this.password = password })
-    }
-
-    suspend fun cancel() = createFlow {
-        apiService.cancel(BaseRequest())
-    }
-
-    suspend fun destroy() = createFlow {
-        apiService.destroy(BaseRequest())
+    suspend fun post2() = createFlow {
+        apiService.post2()
     }
 
     private fun generateRequestBody(requestDataMap: Map<String, String>): HashMap<String, RequestBody> {

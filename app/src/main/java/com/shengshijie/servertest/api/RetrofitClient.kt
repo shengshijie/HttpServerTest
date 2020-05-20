@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    fun getService(): ApiService = Retrofit.Builder()
+    fun getService(): TestService = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
             .baseUrl(BASE_URL)
             .client(OkHttpClient
@@ -26,6 +26,6 @@ object RetrofitClient {
                     .build()
             )
             .build()
-            .create(ApiService::class.java)
+            .create(TestService::class.java)
 
 }

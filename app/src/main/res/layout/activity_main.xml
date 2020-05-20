@@ -26,40 +26,28 @@
 
 
     <Button
-        android:id="@+id/init"
+        android:id="@+id/get1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="init" />
+        android:text="GET1" />
 
     <Button
-        android:id="@+id/setAmount"
+        android:id="@+id/get2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="setAmount" />
+        android:text="GET2" />
 
     <Button
-        android:id="@+id/start"
+        android:id="@+id/post1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="start" />
+        android:text="POST1" />
 
     <Button
-        android:id="@+id/verifyPassword"
+        android:id="@+id/post2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="verifyPassword" />
-
-    <Button
-        android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="cancel" />
-
-    <Button
-        android:id="@+id/destroy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="destroy" />
+        android:text="POST2" />
 
     <Button
         android:id="@+id/java"

@@ -2,6 +2,7 @@ package com.shengshijie.server.http.utils
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONArray
+import com.shengshijie.server.http.IHttpRequest
 import io.netty.handler.codec.http.*
 import io.netty.util.CharsetUtil
 import java.lang.reflect.Array
@@ -9,20 +10,20 @@ import java.util.*
 
 object HttpRequestUtil {
 
-    fun getParameterMap(request: HttpRequest): MutableMap<String, MutableList<String>?> {
+    fun getParameterMap(request: IHttpRequest): MutableMap<String, MutableList<String>?> {
         var paramMap: MutableMap<String, MutableList<String>?> = mutableMapOf()
         when (request.method()) {
             HttpMethod.GET -> {
                 paramMap = QueryStringDecoder(request.uri(), CharsetUtil.UTF_8).parameters()
             }
             HttpMethod.POST -> {
-                paramMap = getPostParamMap(request as FullHttpRequest)
+                paramMap = getPostParamMap(request)
             }
         }
         return paramMap
     }
 
-    private fun getPostParamMap(fullRequest: FullHttpRequest): MutableMap<String, MutableList<String>?> {
+    private fun getPostParamMap(fullRequest: IHttpRequest): MutableMap<String, MutableList<String>?> {
         var paramMap: MutableMap<String, MutableList<String>?> = HashMap()
         val contentType = fullRequest.headers()[HttpHeaderNames.CONTENT_TYPE] ?: return paramMap
         when (contentType.split(";").toTypedArray()[0]) {

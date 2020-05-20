@@ -2,6 +2,7 @@ package com.shengshijie.server
 
 import com.shengshijie.server.http.FilterLoggingHandler
 import com.shengshijie.server.http.HttpHandler
+import com.shengshijie.server.http.SslContextFactory
 import com.shengshijie.server.http.utils.ExceptionUtils
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
@@ -35,6 +36,7 @@ abstract class AbstractServer : IServer {
             bootstrap.childOption(NioChannelOption.SO_SNDBUF, ServerManager.mServerConfig.soSndbuf)
             bootstrap.childHandler(object : ChannelInitializer<SocketChannel>() {
                 public override fun initChannel(ch: SocketChannel) {
+                    if (ServerManager.mServerConfig.enableSSL) ch.pipeline().addLast("ssl", SslContextFactory.createSslContext().newHandler(ch.alloc()))
                     ch.pipeline().addLast("decoder", HttpRequestDecoder())
                     ch.pipeline().addLast("encoder", HttpResponseEncoder())
                     ch.pipeline().addLast("aggregator", HttpObjectAggregator(ServerManager.mServerConfig.maxContentLength))
