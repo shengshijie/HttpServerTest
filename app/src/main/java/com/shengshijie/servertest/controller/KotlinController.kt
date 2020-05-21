@@ -26,7 +26,7 @@ class KotlinController {
 
     @RequestMapping(value = "/get2", method = "GET")
     fun get2(): Any {
-        throw BusinessException("哈哈哈")
+        return BusinessException("哈哈哈")
     }
 
 }

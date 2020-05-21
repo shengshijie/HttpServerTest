@@ -37,11 +37,16 @@ class Router(var invoker: Invoker) {
             if (missingArgs.isNotEmpty()) {
                 throw RequestException("missing parameter: [${missingArgs.joinToString()}]")
             }
-            val obj = invoker.method.call(invoker.instance, *(allArgs.toArray()))
-            if (obj is Pair<*, *>) {
-                HttpResponseUtil.writeOKResponse(response, obj.second, obj.first.toString())
-            } else {
-                HttpResponseUtil.writeOKResponse(response, obj)
+            when (val obj = invoker.method.call(invoker.instance, *(allArgs.toArray()))) {
+                is Pair<*, *> -> {
+                    HttpResponseUtil.writeOKResponse(response, obj.second, obj.first.toString())
+                }
+                is BusinessException -> {
+                    HttpResponseUtil.writeFailResponse(response, obj.code, "${obj.message}")
+                }
+                else -> {
+                    HttpResponseUtil.writeOKResponse(response, obj)
+                }
             }
         } catch (exception: Exception) {
             when (exception) {
