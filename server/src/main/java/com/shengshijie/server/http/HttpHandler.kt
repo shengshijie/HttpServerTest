@@ -54,7 +54,7 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
             when (e) {
                 is BusinessException -> {
                     ServerManager.mLogManager.e("request error: ${ExceptionUtils.toString(e)}")
-                    HttpResponseUtil.writeFailResponse(response, "${e.message}")
+                    HttpResponseUtil.writeFailResponse(response, e.code, "${e.message}")
                 }
                 is RequestException -> {
                     ServerManager.mLogManager.e("request error: ${ExceptionUtils.toString(e)}")

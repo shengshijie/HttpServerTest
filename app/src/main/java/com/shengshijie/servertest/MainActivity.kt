@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                     .setServer(AndroidServer(this@MainActivity))
                     .setDebug(true)
                     .setEnableSSL(true)
-                    .setSign(true)
+                    .setSign(false)
                     .setRootPath("/api")
                     .setLog { level, content -> HLog.log(level.toAndroidLogLevel(), content) }
                     .setLogLevel(LogLevel.INFO)

@@ -23,4 +23,7 @@ object Constant {
     const val DEFAULT_MAXIMUM_POOL_SIZE = 100
     const val DEFAULT_WORK_QUEUE_CAPACITY = 10000
 
+    const val SUCCESS_CODE = 1000
+    const val ERROR_CODE_BUSINESS = 2001
+
 }

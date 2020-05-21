@@ -1,11 +1,10 @@
 package com.shengshijie.servertest.controller
 
+import com.shengshijie.server.http.Pair
 import com.shengshijie.server.http.annotation.Controller
 import com.shengshijie.server.http.annotation.Param
 import com.shengshijie.server.http.annotation.RequestMapping
 import com.shengshijie.server.http.exception.BusinessException
-import com.shengshijie.server.http.exception.RequestException
-import com.shengshijie.server.http.exception.ServerException
 
 @Controller
 @RequestMapping(value = "/kotlin")
@@ -17,13 +16,12 @@ class KotlinController {
 
     @RequestMapping(value = "/post2", method = "POST")
     fun post2() {
-
+        throw BusinessException("dingdan",205)
     }
 
     @RequestMapping(value = "/get1", method = "GET")
     fun get1(amount: String):Any {
-        return "amount:$amount"
-
+        return Pair("哈哈哈",BusinessException("age"))
     }
 
     @RequestMapping(value = "/get2", method = "GET")

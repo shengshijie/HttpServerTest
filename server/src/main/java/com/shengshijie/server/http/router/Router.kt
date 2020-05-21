@@ -2,6 +2,8 @@ package com.shengshijie.server.http.router
 
 import com.shengshijie.server.http.IHttpRequest
 import com.shengshijie.server.http.IHttpResponse
+import com.shengshijie.server.http.Pair
+import com.shengshijie.server.http.config.Constant
 import com.shengshijie.server.http.exception.BusinessException
 import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.exception.ServerException
@@ -36,7 +38,11 @@ class Router(var invoker: Invoker) {
                 throw RequestException("missing parameter: [${missingArgs.joinToString()}]")
             }
             val obj = invoker.method.call(invoker.instance, *(allArgs.toArray()))
-            HttpResponseUtil.writeOKResponse(response, obj)
+            if (obj is Pair<*, *>) {
+                HttpResponseUtil.writeOKResponse(response, obj.second, obj.first.toString())
+            } else {
+                HttpResponseUtil.writeOKResponse(response, obj)
+            }
         } catch (exception: Exception) {
             when (exception) {
                 is BusinessException -> {
@@ -46,7 +52,9 @@ class Router(var invoker: Invoker) {
                     throw exception
                 }
                 is InvocationTargetException -> {
-                    throw BusinessException(exception.targetException.message?:"")
+                    throw BusinessException(exception.targetException.message
+                            ?: "", (exception.targetException as? BusinessException)?.code
+                            ?: Constant.ERROR_CODE_BUSINESS)
                 }
                 else -> {
                     throw ServerException("server error: [${ExceptionUtils.toString(exception)}]")

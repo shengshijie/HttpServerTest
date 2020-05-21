@@ -4,7 +4,6 @@ import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.IHttpRequest
 import com.shengshijie.server.http.IHttpResponse
 import com.shengshijie.server.http.exception.BusinessException
-import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.utils.HttpRequestUtil
 import io.netty.buffer.ByteBufUtil
 import io.netty.util.CharsetUtil
