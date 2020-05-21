@@ -12,6 +12,7 @@ class ServerConfig(mBuilder: Builder) {
     fun getConfig(): HashMap<String, String> = hashMapOf(
             "enableSSL" to enableSSL.toString(),
             "sign" to sign.toString(),
+            "rootPath" to rootPath,
             "salt" to salt,
             "debug" to debug.toString(),
             "logLevel" to logLevel.toString(),
@@ -30,6 +31,7 @@ class ServerConfig(mBuilder: Builder) {
 
     internal var enableSSL = mBuilder.mEnableSSL
     internal var sign = mBuilder.mSign
+    internal var rootPath = mBuilder.mRootPath
     internal var salt = mBuilder.mSalt
     internal var port = mBuilder.mPort
     internal var debug: Boolean = mBuilder.mDebug
@@ -60,6 +62,8 @@ class ServerConfig(mBuilder: Builder) {
     class Builder {
 
         internal var mEnableSSL = Constant.DEFAULT_ENABLE_SSL
+            private set
+        internal var mRootPath = Constant.DEFAULT_ROOT_PATH
             private set
         internal var mSign = Constant.DEFAULT_ENABLE_SIGN
             private set
@@ -102,6 +106,11 @@ class ServerConfig(mBuilder: Builder) {
 
         fun setEnableSSL(enableSSL: Boolean): Builder {
             mEnableSSL = enableSSL
+            return this
+        }
+
+        fun setRootPath(rootPath: String): Builder {
+            mRootPath = rootPath
             return this
         }
 

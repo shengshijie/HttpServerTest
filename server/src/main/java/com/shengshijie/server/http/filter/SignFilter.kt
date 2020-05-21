@@ -11,7 +11,7 @@ import java.security.MessageDigest
 
 class SignFilter : Filter {
 
-    private val timeStampKey = "timestamp"
+    private val timeKey = "time"
     private val nonceKey = "nonce"
     private val signKey = "sign"
     private val expireTime = 5 * 60 * 1000L
@@ -30,7 +30,7 @@ class SignFilter : Filter {
             return true
         }
         nonceList.add(nonce)
-        val start = parameterMap[timeStampKey]?.firstOrNull()?.toLong() ?: 0L
+        val start = parameterMap[timeKey]?.firstOrNull()?.toLong() ?: 0L
         val now = System.currentTimeMillis()
         if (now - start > expireTime || start > now) {
             HttpResponseUtil.writeFail(response, "request expired")

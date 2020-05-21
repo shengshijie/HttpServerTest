@@ -117,6 +117,7 @@ class MainActivity : AppCompatActivity() {
                     .setDebug(true)
                     .setEnableSSL(true)
                     .setSign(true)
+                    .setRootPath("/api")
                     .setLog { level, content -> HLog.log(level.toAndroidLogLevel(), content) }
                     .setLogLevel(LogLevel.INFO)
                     .setPackageNameList(arrayListOf("com.shengshijie.servertest.controller"))

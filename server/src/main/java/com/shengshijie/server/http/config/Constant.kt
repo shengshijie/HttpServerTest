@@ -4,6 +4,8 @@ object Constant {
 
     const val DEBUG_CONTROLLER_PACKAGE_NAME = "com.shengshijie.server.http.controller"
 
+    const val DEFAULT_ROOT_PATH = ""
+
     const val DEFAULT_BACKLOG = 1024
     const val DEFAULT_ENABLE_SSL = false
     const val DEFAULT_SALT = "salt"

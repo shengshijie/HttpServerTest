@@ -1,12 +1,13 @@
 package com.shengshijie.server.http.router
 
+import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.annotation.RequestMapping
 import java.util.*
 
 class Path(requestMapping: RequestMapping, rootRequestMapping: RequestMapping) {
 
     var method: String = requestMapping.method
-    var uri: String = rootRequestMapping.value + requestMapping.value
+    var uri: String = ServerManager.mServerConfig.rootPath + rootRequestMapping.value + requestMapping.value
 
     override fun toString(): String {
         return method.toUpperCase(Locale.getDefault()) + " " + uri.toUpperCase(Locale.getDefault())
