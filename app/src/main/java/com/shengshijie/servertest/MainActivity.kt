@@ -115,6 +115,7 @@ class MainActivity : AppCompatActivity() {
                     .setPort(8888)
                     .setServer(AndroidServer(this@MainActivity))
                     .setDebug(true)
+                    .setEnableSSL(true)
                     .setSign(true)
                     .setLog { level, content -> HLog.log(level.toAndroidLogLevel(), content) }
                     .setLogLevel(LogLevel.INFO)

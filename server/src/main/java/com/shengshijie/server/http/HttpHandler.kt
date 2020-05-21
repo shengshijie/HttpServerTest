@@ -45,9 +45,9 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
             set(ctx.channel())
             ServerManager.mRouterManager.matchRouter(request).call(request, response)
         } catch (e: Exception) {
-            ServerManager.mLogManager.e("server error: ${ExceptionUtils.toString(e)}")
+            ServerManager.mLogManager.e("internal server error: ${ExceptionUtils.toString(e)}")
             response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR)
-            ByteBufUtil.writeUtf8(response.content(), "http handler error: ${e.message}")
+            ByteBufUtil.writeUtf8(response.content(), "internal server error: ${e.message}")
         } finally {
             unset()
             HttpUtil.setContentLength(response.fullHttpResponse, response.content().readableBytes().toLong())

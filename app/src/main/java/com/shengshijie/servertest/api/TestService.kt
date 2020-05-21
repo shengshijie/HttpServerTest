@@ -23,4 +23,4 @@ interface TestService {
 
 }
 
-const val TEST_BASE_URL = "http://localhost:8888"
+const val TEST_BASE_URL = "https://localhost:8888"
