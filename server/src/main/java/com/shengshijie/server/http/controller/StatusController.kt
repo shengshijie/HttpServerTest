@@ -10,18 +10,18 @@ import com.shengshijie.server.http.annotation.RequestMapping
 class StatusController {
 
     @RequestMapping(value = "status", method = "POST")
-    fun status(): RawResponse<Any> {
-        return RawResponse.ok(ServerManager.mStatus.getStatus())
+    fun status(): Any {
+        return ServerManager.mStatus.getStatus()
     }
 
     @RequestMapping(value = "services", method = "POST")
-    fun services(): RawResponse<Any> {
-        return RawResponse.ok(ServerManager.mRouterManager.getRouters())
+    fun services(): Any {
+        return ServerManager.mRouterManager.getRouters()
     }
 
     @RequestMapping(value = "config", method = "POST")
-    fun config(): RawResponse<Any> {
-        return RawResponse.ok(ServerManager.mServerConfig.getConfig())
+    fun config(): Any {
+        return ServerManager.mServerConfig.getConfig()
     }
 
 }

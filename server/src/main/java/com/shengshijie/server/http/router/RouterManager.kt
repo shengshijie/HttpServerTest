@@ -5,7 +5,7 @@ import com.shengshijie.server.http.IHttpRequest
 import com.shengshijie.server.http.annotation.Controller
 import com.shengshijie.server.http.annotation.Param
 import com.shengshijie.server.http.annotation.RequestMapping
-import com.shengshijie.server.http.exception.ServerException
+import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.filter.SignFilter
 import com.shengshijie.server.http.scanner.IPackageScanner
 import java.util.*
@@ -63,13 +63,13 @@ class RouterManager {
             }
         }
         if (path == null) {
-            throw ServerException("path not found: [${requestPath}]")
+            throw RequestException("path not found: [${requestPath}]")
         }
         if (!methodAllowed) {
-            throw ServerException("method not allowed: [${requestMethod}]")
+            throw RequestException("method not allowed: [${requestMethod}]")
         }
         return functionHandlerMap[path]
-                ?: throw ServerException("router not found: [${requestPath} ${requestMethod}]")
+                ?: throw RequestException("router not found: [${requestPath} ${requestMethod}]")
     }
 
 }

@@ -1,13 +1,15 @@
 package com.shengshijie.server.http.router
 
-import com.shengshijie.server.ServerManager
-import com.shengshijie.server.http.filter.Filter
 import com.shengshijie.server.http.IHttpRequest
 import com.shengshijie.server.http.IHttpResponse
+import com.shengshijie.server.http.exception.BusinessException
+import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.exception.ServerException
+import com.shengshijie.server.http.filter.Filter
+import com.shengshijie.server.http.utils.ExceptionUtils
 import com.shengshijie.server.http.utils.HttpRequestUtil
-import io.netty.buffer.ByteBufUtil
-import io.netty.handler.codec.http.HttpHeaderNames
+import com.shengshijie.server.http.utils.HttpResponseUtil
+import java.lang.reflect.InvocationTargetException
 
 class Router(var invoker: Invoker) {
 
@@ -18,26 +20,38 @@ class Router(var invoker: Invoker) {
     }
 
     fun call(request: IHttpRequest, response: IHttpResponse) {
+        val allArgs = arrayListOf<Any>()
+        val missingArgs = arrayListOf<String?>()
         try {
             for (filter in filters) {
                 if (filter.preFilter(request, response)) {
                     return
                 }
             }
-            val allArgs = arrayListOf<Any>()
-            val missingArgs = arrayListOf<String?>()
             for (i in 1 until invoker.args.size) {
                 HttpRequestUtil.getParameterMap(request)[invoker.args[i].name]?.apply { allArgs.add(this[0]) }
                         ?: missingArgs.add(invoker.args[i].name)
             }
             if (missingArgs.isNotEmpty()) {
-                throw ServerException("missing parameter: [${missingArgs.joinToString()}]")
+                throw RequestException("missing parameter: [${missingArgs.joinToString()}]")
             }
             val obj = invoker.method.call(invoker.instance, *(allArgs.toArray()))
-            response.headers()[HttpHeaderNames.CONTENT_TYPE] = "application/json"
-            ByteBufUtil.writeUtf8(response.content(), ServerManager.mSerialize.serialize(obj))
-        } catch (ex: Exception) {
-            throw ServerException("request error :${ex.message}")
+            HttpResponseUtil.writeOKResponse(response, obj)
+        } catch (exception: Exception) {
+            when (exception) {
+                is BusinessException -> {
+                    throw exception
+                }
+                is RequestException -> {
+                    throw exception
+                }
+                is InvocationTargetException -> {
+                    throw BusinessException(exception.targetException.message?:"")
+                }
+                else -> {
+                    throw ServerException("server error: [${ExceptionUtils.toString(exception)}]")
+                }
+            }
         } finally {
             for (filter in filters) {
                 filter.postFilter(request, response)

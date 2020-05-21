@@ -3,13 +3,19 @@ package com.shengshijie.server.http
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.ChannelHolder.set
 import com.shengshijie.server.http.ChannelHolder.unset
+import com.shengshijie.server.http.exception.BusinessException
+import com.shengshijie.server.http.exception.RequestException
+import com.shengshijie.server.http.exception.ServerException
 import com.shengshijie.server.http.utils.ExceptionUtils
-import io.netty.buffer.ByteBufUtil
+import com.shengshijie.server.http.utils.HttpResponseUtil
 import io.netty.channel.ChannelFutureListener
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
-import io.netty.handler.codec.http.*
+import io.netty.handler.codec.http.DefaultFullHttpResponse
+import io.netty.handler.codec.http.FullHttpRequest
+import io.netty.handler.codec.http.HttpResponseStatus
+import io.netty.handler.codec.http.HttpUtil
 import io.netty.handler.timeout.IdleStateEvent
 import io.netty.util.ReferenceCountUtil
 import java.util.concurrent.LinkedBlockingQueue
@@ -45,9 +51,24 @@ class HttpHandler : ChannelInboundHandlerAdapter() {
             set(ctx.channel())
             ServerManager.mRouterManager.matchRouter(request).call(request, response)
         } catch (e: Exception) {
-            ServerManager.mLogManager.e("internal server error: ${ExceptionUtils.toString(e)}")
-            response.setStatus(HttpResponseStatus.INTERNAL_SERVER_ERROR)
-            ByteBufUtil.writeUtf8(response.content(), "internal server error: ${e.message}")
+            when (e) {
+                is BusinessException -> {
+                    ServerManager.mLogManager.e("request error: ${ExceptionUtils.toString(e)}")
+                    HttpResponseUtil.writeFailResponse(response, "${e.message}")
+                }
+                is RequestException -> {
+                    ServerManager.mLogManager.e("request error: ${ExceptionUtils.toString(e)}")
+                    HttpResponseUtil.writeFail(response, HttpResponseStatus.BAD_REQUEST, "request error: ${e.message}")
+                }
+                is ServerException -> {
+                    ServerManager.mLogManager.e("internal server error: ${ExceptionUtils.toString(e)}")
+                    HttpResponseUtil.writeFail(response, HttpResponseStatus.INTERNAL_SERVER_ERROR, "internal server error: ${e.message}")
+                }
+                else -> {
+                    ServerManager.mLogManager.e("unknown server error: ${ExceptionUtils.toString(e)}")
+                    HttpResponseUtil.writeFail(response, HttpResponseStatus.INTERNAL_SERVER_ERROR, "unknown server error: ${e.message}")
+                }
+            }
         } finally {
             unset()
             HttpUtil.setContentLength(response.fullHttpResponse, response.content().readableBytes().toLong())

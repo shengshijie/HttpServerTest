@@ -3,8 +3,9 @@ package com.shengshijie.server.http.filter
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.IHttpRequest
 import com.shengshijie.server.http.IHttpResponse
+import com.shengshijie.server.http.exception.BusinessException
+import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.utils.HttpRequestUtil
-import com.shengshijie.server.http.utils.HttpResponseUtil
 import io.netty.buffer.ByteBufUtil
 import io.netty.util.CharsetUtil
 import java.security.MessageDigest
@@ -21,32 +22,16 @@ class SignFilter : Filter {
         ServerManager.mLogManager.i("preFilter ${request.uri()} ${response.content().toString(CharsetUtil.UTF_8)}")
         val parameterMap = HttpRequestUtil.getParameterMap(request)
         val nonce = parameterMap[nonceKey]?.firstOrNull() ?: ""
-        if (nonce.isBlank()) {
-            HttpResponseUtil.writeFail(response, "request nonce param")
-            return true
-        }
-        if (nonceList.contains(nonce)) {
-            HttpResponseUtil.writeFail(response, "duplicate request")
-            return true
-        }
+        if (nonce.isBlank()) throw BusinessException("request nonce param")
+        if (nonceList.contains(nonce)) throw BusinessException("duplicate request")
         nonceList.add(nonce)
         val start = parameterMap[timeKey]?.firstOrNull()?.toLong() ?: 0L
         val now = System.currentTimeMillis()
-        if (now - start > expireTime || start > now) {
-            HttpResponseUtil.writeFail(response, "request expired")
-            return true
-        }
-        val sign = parameterMap[signKey]?.firstOrNull()
-        if (sign == null) {
-            HttpResponseUtil.writeFail(response, "not signed")
-            return true
-        }
+        if (now - start > expireTime || start > now) throw BusinessException("request expired")
+        val sign = parameterMap[signKey]?.firstOrNull() ?: throw BusinessException("not signed")
         parameterMap.remove(signKey)
         val signLocal = getParamSign(parameterMap)
-        if (sign != signLocal) {
-            HttpResponseUtil.writeFail(response, "incorrect sign")
-            return true
-        }
+        if (sign != signLocal) throw BusinessException("incorrect sign")
         return false
     }
 
