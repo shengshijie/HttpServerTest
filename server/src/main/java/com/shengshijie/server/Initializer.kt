@@ -25,7 +25,7 @@ class Initializer : ChannelInitializer<SocketChannel>() {
         pipeline.addLast("chunked", ChunkedWriteHandler())
         if (ServerManager.mServerConfig.enableCors) {
             val corsHandler = CorsHandler(CorsConfigBuilder.forAnyOrigin().allowNullOrigin().allowCredentials().build())
-            pipeline.addLast("ssl", corsHandler)
+            pipeline.addLast("cors", corsHandler)
         }
         pipeline.addLast("logging", FilterLoggingHandler())
         pipeline.addLast("httpHandler", HttpHandler())
