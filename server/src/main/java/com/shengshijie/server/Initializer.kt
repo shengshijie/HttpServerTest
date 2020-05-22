@@ -12,7 +12,7 @@ import io.netty.handler.codec.http.cors.CorsConfigBuilder
 import io.netty.handler.codec.http.cors.CorsHandler
 import io.netty.handler.stream.ChunkedWriteHandler
 
-class Initializer : ChannelInitializer<SocketChannel>() {
+internal class Initializer : ChannelInitializer<SocketChannel>() {
 
     override fun initChannel(ch: SocketChannel) {
         val pipeline = ch.pipeline()

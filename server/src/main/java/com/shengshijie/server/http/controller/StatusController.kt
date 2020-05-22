@@ -7,7 +7,7 @@ import com.shengshijie.server.http.annotation.RequestMapping
 
 @Controller
 @RequestMapping(value = "/")
-class StatusController {
+internal class StatusController {
 
     @RequestMapping(value = "status", method = "POST")
     fun status(): Any {

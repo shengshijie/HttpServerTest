@@ -3,7 +3,7 @@ package com.shengshijie.server.http
 import io.netty.buffer.ByteBuf
 import io.netty.handler.codec.http.*
 
-class HttpResponseImpl(val fullHttpResponse: FullHttpResponse) : IHttpResponse {
+internal class HttpResponseImpl(val fullHttpResponse: FullHttpResponse) : IHttpResponse {
 
     override fun status(): HttpResponseStatus{
         return fullHttpResponse.status()

@@ -3,7 +3,7 @@ package com.shengshijie.server.http.thread
 import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicInteger
 
-class NamedThreadFactory @JvmOverloads constructor(prefix: String = "pool-" + seq.getAndIncrement(), daemon: Boolean = false) : ThreadFactory {
+internal class NamedThreadFactory @JvmOverloads constructor(prefix: String = "pool-" + seq.getAndIncrement(), daemon: Boolean = false) : ThreadFactory {
 
     private val mThreadNum = AtomicInteger(1)
     private val mPrefix: String = "$prefix-thread-"

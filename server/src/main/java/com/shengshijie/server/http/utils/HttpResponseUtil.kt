@@ -7,7 +7,7 @@ import io.netty.buffer.ByteBufUtil
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpResponseStatus
 
-object HttpResponseUtil {
+internal object HttpResponseUtil {
 
     fun writeOKResponse(response: IHttpResponse, any: Any? = "", msg: String = "success") {
         response.headers()[HttpHeaderNames.CONTENT_TYPE] = "application/json"

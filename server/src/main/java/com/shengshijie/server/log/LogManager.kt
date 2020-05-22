@@ -2,7 +2,7 @@ package com.shengshijie.server.log
 
 import com.shengshijie.server.ServerManager
 
-class LogManager {
+internal class LogManager {
 
     private var mLog: (level: LogLevel, content: String) -> Unit = defaultLog
 

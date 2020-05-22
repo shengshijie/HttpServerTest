@@ -13,7 +13,7 @@ import com.shengshijie.server.http.utils.HttpRequestUtil
 import com.shengshijie.server.http.utils.HttpResponseUtil
 import java.lang.reflect.InvocationTargetException
 
-class Router(var invoker: Invoker) {
+internal class Router(var invoker: Invoker) {
 
     private val filters = mutableListOf<Filter>()
 

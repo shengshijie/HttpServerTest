@@ -3,7 +3,7 @@ package com.shengshijie.server.http.utils
 import java.math.BigDecimal
 import java.math.BigInteger
 
-object PrimitiveTypeUtil {
+internal object PrimitiveTypeUtil {
 
     fun isPriType(cls: Any): Boolean {
         return arrayOf<Any>(

@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
-class TracingThreadPoolExecutor(corePoolSize: Int, maximumPoolSize: Int, workQueue: BlockingQueue<Runnable?>?) : ThreadPoolExecutor(corePoolSize, maximumPoolSize, 0L, TimeUnit.MILLISECONDS, workQueue) {
+internal class TracingThreadPoolExecutor(corePoolSize: Int, maximumPoolSize: Int, workQueue: BlockingQueue<Runnable?>?) : ThreadPoolExecutor(corePoolSize, maximumPoolSize, 0L, TimeUnit.MILLISECONDS, workQueue) {
 
     private val pendingTasks = AtomicInteger()
 

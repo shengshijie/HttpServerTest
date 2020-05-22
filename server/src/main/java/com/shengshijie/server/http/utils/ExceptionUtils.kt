@@ -3,7 +3,7 @@ package com.shengshijie.server.http.utils
 import java.io.PrintWriter
 import java.io.StringWriter
 
-object ExceptionUtils {
+internal object ExceptionUtils {
 
     fun toString(ex: Throwable): String {
         val strWriter = StringWriter()

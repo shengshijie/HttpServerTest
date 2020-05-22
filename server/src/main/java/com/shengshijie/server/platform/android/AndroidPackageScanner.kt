@@ -10,7 +10,7 @@ import dalvik.system.PathClassLoader
 import java.util.*
 import kotlin.reflect.KClass
 
-class AndroidPackageScanner(private val mContext: Context) : IPackageScanner {
+internal class AndroidPackageScanner(private val mContext: Context) : IPackageScanner {
 
     override fun scan(packageNameList: List<String>): List<KClass<*>> {
         val classes: MutableList<KClass<out Any>> = ArrayList()

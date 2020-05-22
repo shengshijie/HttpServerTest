@@ -2,7 +2,7 @@ package com.shengshijie.server.http
 
 import io.netty.channel.Channel
 
-object ChannelHolder {
+internal object ChannelHolder {
 
     private val channelHolder = ThreadLocal<Channel>()
 

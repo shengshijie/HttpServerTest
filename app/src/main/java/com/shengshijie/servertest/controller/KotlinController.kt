@@ -4,6 +4,7 @@ import com.shengshijie.server.http.annotation.Controller
 import com.shengshijie.server.http.annotation.Param
 import com.shengshijie.server.http.annotation.RequestMapping
 import com.shengshijie.server.http.exception.BusinessException
+import com.shengshijie.servertest.Person
 
 @Controller
 @RequestMapping(value = "/kotlin")
@@ -20,7 +21,7 @@ class KotlinController {
 
     @RequestMapping(value = "/get1", method = "GET")
     fun get1(amount: String): Any {
-        return BusinessException("amount:$amount",3243)
+        return Person(null,"34")
     }
 
     @RequestMapping(value = "/get2", method = "GET")

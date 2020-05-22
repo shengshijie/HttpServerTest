@@ -3,7 +3,7 @@ package com.shengshijie.server.platform.java
 import java.io.File
 import java.util.*
 
-object FileUtils {
+internal object FileUtils {
 
     fun listFiles(dir: File, suffix: String, recursive: Boolean): List<File> {
         val files: MutableList<File> = ArrayList()

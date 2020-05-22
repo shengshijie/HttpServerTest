@@ -5,6 +5,6 @@ import com.google.gson.GsonBuilder
 
 internal object GsonInstance {
 
-    internal val gson: Gson = GsonBuilder().create()
+    internal val gson: Gson = GsonBuilder().serializeNulls().create()
 
 }

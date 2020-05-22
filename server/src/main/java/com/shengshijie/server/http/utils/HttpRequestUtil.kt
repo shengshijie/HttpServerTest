@@ -8,7 +8,7 @@ import io.netty.util.CharsetUtil
 import java.lang.reflect.Array
 import java.util.*
 
-object HttpRequestUtil {
+internal object HttpRequestUtil {
 
     fun getParameterMap(request: IHttpRequest): MutableMap<String, MutableList<String>?> {
         var paramMap: MutableMap<String, MutableList<String>?> = mutableMapOf()

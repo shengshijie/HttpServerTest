@@ -9,7 +9,7 @@ import io.netty.buffer.ByteBufUtil
 import io.netty.util.CharsetUtil
 import java.security.MessageDigest
 
-class SignFilter : Filter {
+internal class SignFilter : Filter {
 
     private val timeKey = "time"
     private val nonceKey = "nonce"

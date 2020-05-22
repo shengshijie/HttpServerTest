@@ -12,7 +12,7 @@ import java.util.jar.JarInputStream
 import kotlin.collections.ArrayList
 import kotlin.reflect.KClass
 
-object JavaPackageScannerUtils {
+internal object JavaPackageScannerUtils {
 
     fun scan(packageName: String): List<KClass<*>> {
         val classes: MutableList<KClass<*>> = LinkedList()

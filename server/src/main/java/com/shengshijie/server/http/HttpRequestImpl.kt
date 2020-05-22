@@ -4,7 +4,7 @@ import com.shengshijie.server.http.utils.HttpRequestUtil
 import io.netty.buffer.ByteBuf
 import io.netty.handler.codec.http.*
 
-class HttpRequestImpl(val fullHttpRequest: FullHttpRequest) : IHttpRequest {
+internal class HttpRequestImpl(val fullHttpRequest: FullHttpRequest) : IHttpRequest {
 
     private val mParams by lazy {
         val params = mutableMapOf<String, String?>()

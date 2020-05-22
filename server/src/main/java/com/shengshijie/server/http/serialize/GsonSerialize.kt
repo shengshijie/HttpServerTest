@@ -2,7 +2,7 @@ package com.shengshijie.server.http.serialize
 
 import java.lang.reflect.Type
 
-class GsonSerialize : Serialize {
+internal class GsonSerialize : Serialize {
 
     override fun <T> serialize(t: T): String {
         return GsonInstance.gson.toJson(t)

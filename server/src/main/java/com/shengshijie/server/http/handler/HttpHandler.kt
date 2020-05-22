@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadPoolExecutor
 
 
 @Sharable
-class HttpHandler : ChannelInboundHandlerAdapter() {
+internal class HttpHandler : ChannelInboundHandlerAdapter() {
 
     private val executor: ThreadPoolExecutor? = TracingThreadPoolExecutor(ServerManager.mServerConfig.corePoolSize,
             ServerManager.mServerConfig.maximumPoolSize,

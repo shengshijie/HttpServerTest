@@ -1,6 +1,6 @@
 package com.shengshijie.server.http.config
 
-object Constant {
+internal object Constant {
 
     const val DEBUG_CONTROLLER_PACKAGE_NAME = "com.shengshijie.server.http.controller"
 

@@ -2,7 +2,7 @@ package com.shengshijie.server.http
 
 import com.shengshijie.server.http.config.Constant
 
-data class RawResponse<T>(private val code: Int, private val message: String, private val data: T) {
+internal data class RawResponse<T>(private val code: Int, private val message: String, private val data: T) {
 
     companion object {
 

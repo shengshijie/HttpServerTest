@@ -9,7 +9,7 @@ import io.netty.handler.logging.LoggingHandler
 import io.netty.util.CharsetUtil
 import java.net.SocketAddress
 
-class FilterLoggingHandler : LoggingHandler(ServerManager.mServerConfig.logLevel.toNettyLogLevel()) {
+internal class FilterLoggingHandler : LoggingHandler(ServerManager.mServerConfig.logLevel.toNettyLogLevel()) {
 
     override fun channelRegistered(ctx: ChannelHandlerContext) {
         ServerManager.mLogManager.d("channelRegistered")
