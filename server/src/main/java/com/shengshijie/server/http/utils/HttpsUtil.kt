@@ -13,7 +13,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLEngine
 import javax.net.ssl.SSLException
 
-internal object HttpsUtils {
+internal object HttpsUtil {
 
     fun createSslContext(): SslContext {
         return try {

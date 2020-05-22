@@ -1,8 +1,7 @@
 package com.shengshijie.server.platform.java
 
 import com.shengshijie.server.ServerManager
-import com.shengshijie.server.http.utils.ExceptionUtils
-import com.shengshijie.server.log.LogManager
+import com.shengshijie.server.http.utils.ExceptionUtil
 import java.io.File
 import java.net.URISyntaxException
 import java.net.URL
@@ -28,7 +27,7 @@ internal object JavaPackageScannerUtils {
                 }
             }
         } catch (e: Exception) {
-            ServerManager.mLogManager.w("scan error: ${ExceptionUtils.toString(e)}")
+            ServerManager.mLogManager.w("scan error: ${ExceptionUtil.toString(e)}")
         }
         return classes
     }

@@ -2,13 +2,14 @@ package com.shengshijie.server.http.router
 
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.common.Pair
-import com.shengshijie.server.http.IHttpRequest
-import com.shengshijie.server.http.IHttpResponse
+import com.shengshijie.server.http.request.IHttpRequest
+import com.shengshijie.server.http.response.IHttpResponse
 import com.shengshijie.server.http.exception.BusinessException
 import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.exception.ServerException
 import com.shengshijie.server.http.filter.Filter
-import com.shengshijie.server.http.utils.ExceptionUtils
+import com.shengshijie.server.http.response.RawResponse
+import com.shengshijie.server.http.utils.ExceptionUtil
 import com.shengshijie.server.http.utils.HttpResponseUtil
 import java.lang.reflect.InvocationTargetException
 
@@ -40,6 +41,9 @@ internal class Router(var invoker: Invoker) {
                 is Pair<*, *> -> {
                     HttpResponseUtil.writeOKResponse(response, obj.second, obj.first.toString())
                 }
+                is RawResponse -> {
+                    HttpResponseUtil.writeRawResponse(response, obj.content)
+                }
                 is BusinessException -> {
                     HttpResponseUtil.writeFailResponse(response, obj.code, "${obj.message}")
                 }
@@ -61,7 +65,7 @@ internal class Router(var invoker: Invoker) {
                             ?: ServerManager.mServerConfig.errorCode)
                 }
                 else -> {
-                    throw ServerException("server error: [${ExceptionUtils.toString(exception)}]")
+                    throw ServerException("server error: [${ExceptionUtil.toString(exception)}]")
                 }
             }
         } finally {

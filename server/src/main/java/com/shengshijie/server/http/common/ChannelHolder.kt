@@ -1,4 +1,4 @@
-package com.shengshijie.server.http
+package com.shengshijie.server.http.common
 
 import io.netty.channel.Channel
 

@@ -1,4 +1,4 @@
-package com.shengshijie.server.http
+package com.shengshijie.server.http.response
 
 import io.netty.buffer.ByteBuf
 import io.netty.handler.codec.http.HttpHeaders

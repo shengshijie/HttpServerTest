@@ -1,7 +1,6 @@
 package com.shengshijie.server.http.controller
 
 import com.shengshijie.server.ServerManager
-import com.shengshijie.server.http.RawResponse
 import com.shengshijie.server.http.annotation.Controller
 import com.shengshijie.server.http.annotation.RequestMapping
 

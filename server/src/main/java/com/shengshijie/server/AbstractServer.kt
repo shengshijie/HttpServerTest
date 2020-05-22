@@ -1,7 +1,7 @@
 package com.shengshijie.server
 
 import com.shengshijie.server.common.Result
-import com.shengshijie.server.http.utils.ExceptionUtils
+import com.shengshijie.server.http.utils.ExceptionUtil
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.EventLoopGroup
 import io.netty.channel.nio.NioEventLoopGroup
@@ -38,7 +38,7 @@ abstract class AbstractServer : IServer {
                 workerGroup?.shutdownGracefully()
             }
         } catch (e: Exception) {
-            result(Result.error("server start error:" + ExceptionUtils.toString(e)))
+            result(Result.error("server start error:" + ExceptionUtil.toString(e)))
         }
     }
 
@@ -50,7 +50,7 @@ abstract class AbstractServer : IServer {
             workerGroup = null
             result(Result.success("server stop success"))
         } catch (e: Exception) {
-            result(Result.error("server stop error:" + ExceptionUtils.toString(e)))
+            result(Result.error("server stop error:" + ExceptionUtil.toString(e)))
         }
     }
 

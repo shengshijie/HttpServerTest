@@ -1,7 +1,7 @@
 package com.shengshijie.server.http.router
 
 import com.shengshijie.server.ServerManager
-import com.shengshijie.server.http.IHttpRequest
+import com.shengshijie.server.http.request.IHttpRequest
 import com.shengshijie.server.http.annotation.Controller
 import com.shengshijie.server.http.annotation.Param
 import com.shengshijie.server.http.annotation.RequestMapping

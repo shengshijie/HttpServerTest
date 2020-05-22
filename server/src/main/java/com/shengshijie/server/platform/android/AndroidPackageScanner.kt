@@ -3,8 +3,7 @@ package com.shengshijie.server.platform.android
 import android.content.Context
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.scanner.IPackageScanner
-import com.shengshijie.server.http.utils.ExceptionUtils
-import com.shengshijie.server.log.LogManager
+import com.shengshijie.server.http.utils.ExceptionUtil
 import dalvik.system.DexFile
 import dalvik.system.PathClassLoader
 import java.util.*
@@ -27,7 +26,7 @@ internal class AndroidPackageScanner(private val mContext: Context) : IPackageSc
                 }
             }
         } catch (e: Exception) {
-            ServerManager.mLogManager.w("scan error: ${ExceptionUtils.toString(e)}")
+            ServerManager.mLogManager.w("scan error: ${ExceptionUtil.toString(e)}")
         }
         return classes
     }

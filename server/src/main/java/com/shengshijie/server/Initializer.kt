@@ -2,7 +2,7 @@ package com.shengshijie.server
 
 import com.shengshijie.server.http.handler.FilterLoggingHandler
 import com.shengshijie.server.http.handler.HttpHandler
-import com.shengshijie.server.http.utils.HttpsUtils
+import com.shengshijie.server.http.utils.HttpsUtil
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.socket.SocketChannel
 import io.netty.handler.codec.http.HttpObjectAggregator
@@ -17,7 +17,7 @@ internal class Initializer : ChannelInitializer<SocketChannel>() {
     override fun initChannel(ch: SocketChannel) {
         val pipeline = ch.pipeline()
         if (ServerManager.mServerConfig.enableSSL) {
-            pipeline.addLast("ssl", HttpsUtils.getSSlHandler(ch))
+            pipeline.addLast("ssl", HttpsUtil.getSSlHandler(ch))
         }
         pipeline.addLast("decoder", HttpRequestDecoder())
         pipeline.addLast("encoder", HttpResponseEncoder())

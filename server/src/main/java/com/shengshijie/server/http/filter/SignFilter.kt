@@ -1,10 +1,9 @@
 package com.shengshijie.server.http.filter
 
 import com.shengshijie.server.ServerManager
-import com.shengshijie.server.http.IHttpRequest
-import com.shengshijie.server.http.IHttpResponse
+import com.shengshijie.server.http.request.IHttpRequest
+import com.shengshijie.server.http.response.IHttpResponse
 import com.shengshijie.server.http.exception.BusinessException
-import com.shengshijie.server.http.utils.HttpRequestUtil
 import io.netty.buffer.ByteBufUtil
 import io.netty.util.CharsetUtil
 import java.security.MessageDigest
