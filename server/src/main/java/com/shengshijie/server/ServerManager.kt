@@ -1,5 +1,6 @@
 package com.shengshijie.server
 
+import com.shengshijie.server.common.Result
 import com.shengshijie.server.http.config.Constant
 import com.shengshijie.server.http.config.ServerConfig
 import com.shengshijie.server.http.controller.Status

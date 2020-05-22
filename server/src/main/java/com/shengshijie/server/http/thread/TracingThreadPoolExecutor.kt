@@ -1,6 +1,7 @@
-package com.shengshijie.server.http
+package com.shengshijie.server.http.thread
 
 import com.shengshijie.server.ServerManager
+import com.shengshijie.server.http.thread.NamedThreadFactory
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit

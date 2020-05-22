@@ -1,4 +1,4 @@
-package com.shengshijie.server.http
+package com.shengshijie.server.common
 
 data class Triple<out A, out B, out C>(
         val first: A,

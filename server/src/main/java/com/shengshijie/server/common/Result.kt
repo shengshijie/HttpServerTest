@@ -1,4 +1,4 @@
-package com.shengshijie.server
+package com.shengshijie.server.common
 
 sealed class Result<T> {
 

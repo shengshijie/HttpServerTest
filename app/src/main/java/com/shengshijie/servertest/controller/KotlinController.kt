@@ -1,6 +1,6 @@
 package com.shengshijie.servertest.controller
 
-import com.shengshijie.server.http.Pair
+import com.shengshijie.server.common.Pair
 import com.shengshijie.server.http.annotation.Controller
 import com.shengshijie.server.http.annotation.Param
 import com.shengshijie.server.http.annotation.RequestMapping
@@ -21,7 +21,7 @@ class KotlinController {
 
     @RequestMapping(value = "/get1", method = "GET")
     fun get1(amount: String):Any {
-        return Pair("哈哈哈",BusinessException("age"))
+        return Pair("哈哈哈", BusinessException("age"))
     }
 
     @RequestMapping(value = "/get2", method = "GET")

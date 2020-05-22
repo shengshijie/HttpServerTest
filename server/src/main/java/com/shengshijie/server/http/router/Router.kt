@@ -2,7 +2,7 @@ package com.shengshijie.server.http.router
 
 import com.shengshijie.server.http.IHttpRequest
 import com.shengshijie.server.http.IHttpResponse
-import com.shengshijie.server.http.Pair
+import com.shengshijie.server.common.Pair
 import com.shengshijie.server.http.config.Constant
 import com.shengshijie.server.http.exception.BusinessException
 import com.shengshijie.server.http.exception.RequestException

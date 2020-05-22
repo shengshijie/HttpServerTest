@@ -1,4 +1,4 @@
-package com.shengshijie.server.http
+package com.shengshijie.server.common
 
 data class Pair<out A, out B>(
         val first: A,

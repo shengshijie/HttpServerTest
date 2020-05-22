@@ -1,5 +1,6 @@
 package com.shengshijie.server
 
+import com.shengshijie.server.common.Result
 import com.shengshijie.server.http.utils.ExceptionUtils
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.EventLoopGroup

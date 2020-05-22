@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
             socketPort = 4569
         })
         HLog.init(application, application.getExternalFilesDir(null)?.absolutePath, "RFT")
+//        findViewById<View>(R.id.ll_content).scaleY = -1F
         mainViewModel.initResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {

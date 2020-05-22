@@ -1,5 +1,6 @@
 package com.shengshijie.server
 
+import com.shengshijie.server.common.Result
 import com.shengshijie.server.http.scanner.IPackageScanner
 
 interface IServer {
