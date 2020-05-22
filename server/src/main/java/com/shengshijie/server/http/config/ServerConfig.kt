@@ -11,6 +11,7 @@ class ServerConfig(mBuilder: Builder) {
 
     fun getConfig(): HashMap<String, String> = hashMapOf(
             "enableSSL" to enableSSL.toString(),
+            "enableCors" to enableCors.toString(),
             "sign" to sign.toString(),
             "rootPath" to rootPath,
             "salt" to salt,
@@ -30,6 +31,7 @@ class ServerConfig(mBuilder: Builder) {
             "packageNameList" to packageNameList.toString())
 
     internal var enableSSL = mBuilder.mEnableSSL
+    internal var enableCors = mBuilder.mEnableCors
     internal var sign = mBuilder.mSign
     internal var rootPath = mBuilder.mRootPath
     internal var salt = mBuilder.mSalt
@@ -62,6 +64,8 @@ class ServerConfig(mBuilder: Builder) {
     class Builder {
 
         internal var mEnableSSL = Constant.DEFAULT_ENABLE_SSL
+            private set
+        internal var mEnableCors = Constant.DEFAULT_ENABLE_CORS
             private set
         internal var mRootPath = Constant.DEFAULT_ROOT_PATH
             private set
@@ -106,6 +110,11 @@ class ServerConfig(mBuilder: Builder) {
 
         fun setEnableSSL(enableSSL: Boolean): Builder {
             mEnableSSL = enableSSL
+            return this
+        }
+
+        fun setEnableCors(enableCors: Boolean): Builder {
+            mEnableCors = enableCors
             return this
         }
 

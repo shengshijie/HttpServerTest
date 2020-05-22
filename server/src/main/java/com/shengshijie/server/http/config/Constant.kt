@@ -8,6 +8,7 @@ object Constant {
 
     const val DEFAULT_BACKLOG = 1024
     const val DEFAULT_ENABLE_SSL = false
+    const val DEFAULT_ENABLE_CORS = false
     const val DEFAULT_SALT = "salt"
     const val DEFAULT_ENABLE_SIGN = false
 

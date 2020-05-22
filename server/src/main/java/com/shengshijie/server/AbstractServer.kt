@@ -1,20 +1,11 @@
 package com.shengshijie.server
 
-import com.shengshijie.server.http.FilterLoggingHandler
-import com.shengshijie.server.http.HttpHandler
-import com.shengshijie.server.http.SslContextFactory
 import com.shengshijie.server.http.utils.ExceptionUtils
 import io.netty.bootstrap.ServerBootstrap
-import io.netty.channel.ChannelInitializer
 import io.netty.channel.EventLoopGroup
 import io.netty.channel.nio.NioEventLoopGroup
-import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioChannelOption
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import io.netty.handler.codec.http.HttpObjectAggregator
-import io.netty.handler.codec.http.HttpRequestDecoder
-import io.netty.handler.codec.http.HttpResponseEncoder
-import io.netty.handler.stream.ChunkedWriteHandler
 
 abstract class AbstractServer : IServer {
 
@@ -34,20 +25,13 @@ abstract class AbstractServer : IServer {
             bootstrap.childOption(NioChannelOption.SO_KEEPALIVE, ServerManager.mServerConfig.soKeepalive)
             bootstrap.childOption(NioChannelOption.SO_RCVBUF, ServerManager.mServerConfig.soRcvbuf)
             bootstrap.childOption(NioChannelOption.SO_SNDBUF, ServerManager.mServerConfig.soSndbuf)
-            bootstrap.childHandler(object : ChannelInitializer<SocketChannel>() {
-                public override fun initChannel(ch: SocketChannel) {
-                    if (ServerManager.mServerConfig.enableSSL) ch.pipeline().addLast("ssl", SslContextFactory.createSslContext().newHandler(ch.alloc()))
-                    ch.pipeline().addLast("decoder", HttpRequestDecoder())
-                    ch.pipeline().addLast("encoder", HttpResponseEncoder())
-                    ch.pipeline().addLast("aggregator", HttpObjectAggregator(ServerManager.mServerConfig.maxContentLength))
-                    ch.pipeline().addLast("chunked", ChunkedWriteHandler())
-                    ch.pipeline().addLast("logging", FilterLoggingHandler())
-                    ch.pipeline().addLast("httpHandler", HttpHandler())
-                }
-            })
-            val channelFuture = bootstrap.bind(ServerManager.mServerConfig.port).syncUninterruptibly().addListener {
-                result(Result.success("server start at port ${ServerManager.mServerConfig.port}"))
-            }
+            bootstrap.childHandler(Initializer())
+            val channelFuture = bootstrap
+                    .bind(ServerManager.mServerConfig.port)
+                    .syncUninterruptibly()
+                    .addListener {
+                        result(Result.success("server start at port ${ServerManager.mServerConfig.port}"))
+                    }
             channelFuture.channel().closeFuture().addListener {
                 bossGroup?.shutdownGracefully()
                 workerGroup?.shutdownGracefully()
