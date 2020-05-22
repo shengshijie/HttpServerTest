@@ -9,13 +9,13 @@ import io.netty.handler.codec.http.HttpResponseStatus
 
 internal object HttpResponseUtil {
 
-    fun writeOKResponse(response: IHttpResponse, any: Any? = "", msg: String = "success") {
+    fun writeOKResponse(response: IHttpResponse, any: Any? = Unit, msg: String = "success") {
         response.headers()[HttpHeaderNames.CONTENT_TYPE] = "application/json"
         response.content().clear()
         ByteBufUtil.writeUtf8(response.content(), ServerManager.mSerialize.serialize(RawResponse.ok(any ?: Unit, msg)))
     }
 
-    fun writeFailResponse(response: IHttpResponse, code: Int, msg: String = "error") {
+    fun writeFailResponse(response: IHttpResponse, code: Int = ServerManager.mServerConfig.errorCode, msg: String = "error") {
         response.headers()[HttpHeaderNames.CONTENT_TYPE] = "application/json"
         response.content().clear()
         ByteBufUtil.writeUtf8(response.content(), ServerManager.mSerialize.serialize(RawResponse.fail(code, msg)))

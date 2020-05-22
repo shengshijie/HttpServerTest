@@ -1,6 +1,6 @@
 package com.shengshijie.server.http
 
-import com.shengshijie.server.http.config.Constant
+import com.shengshijie.server.ServerManager
 
 internal data class RawResponse<T>(private val code: Int, private val message: String, private val data: T) {
 
@@ -8,7 +8,7 @@ internal data class RawResponse<T>(private val code: Int, private val message: S
 
         @JvmStatic
         fun <T> ok(data: T,msg: String): RawResponse<T> {
-            return RawResponse(Constant.SUCCESS_CODE, msg, data)
+            return RawResponse(ServerManager.mServerConfig.successCode, msg, data)
         }
 
         @JvmStatic

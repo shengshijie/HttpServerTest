@@ -1,5 +1,5 @@
 package com.shengshijie.server.http.exception
 
-import com.shengshijie.server.http.config.Constant
+import com.shengshijie.server.ServerManager
 
-class BusinessException @JvmOverloads constructor(msg: String, val code: Int = Constant.ERROR_CODE_BUSINESS) : Exception(msg)
+class BusinessException @JvmOverloads constructor(msg: String, val code: Int = ServerManager.mServerConfig.errorCode) : Exception(msg)

@@ -1,15 +1,14 @@
 package com.shengshijie.server.http.router
 
+import com.shengshijie.server.ServerManager
+import com.shengshijie.server.common.Pair
 import com.shengshijie.server.http.IHttpRequest
 import com.shengshijie.server.http.IHttpResponse
-import com.shengshijie.server.common.Pair
-import com.shengshijie.server.http.config.Constant
 import com.shengshijie.server.http.exception.BusinessException
 import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.exception.ServerException
 import com.shengshijie.server.http.filter.Filter
 import com.shengshijie.server.http.utils.ExceptionUtils
-import com.shengshijie.server.http.utils.HttpRequestUtil
 import com.shengshijie.server.http.utils.HttpResponseUtil
 import java.lang.reflect.InvocationTargetException
 
@@ -59,7 +58,7 @@ internal class Router(var invoker: Invoker) {
                 is InvocationTargetException -> {
                     throw BusinessException(exception.targetException.message
                             ?: "", (exception.targetException as? BusinessException)?.code
-                            ?: Constant.ERROR_CODE_BUSINESS)
+                            ?: ServerManager.mServerConfig.errorCode)
                 }
                 else -> {
                     throw ServerException("server error: [${ExceptionUtils.toString(exception)}]")

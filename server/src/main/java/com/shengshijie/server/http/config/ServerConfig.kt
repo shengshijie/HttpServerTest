@@ -1,11 +1,8 @@
 package com.shengshijie.server.http.config
 
 import com.shengshijie.server.IServer
-import com.shengshijie.server.http.serialize.GsonSerialize
 import com.shengshijie.server.http.serialize.Serialize
 import com.shengshijie.server.log.LogLevel
-import com.shengshijie.server.log.LogManager
-import com.shengshijie.server.platform.java.JavaServer
 
 class ServerConfig(mBuilder: Builder) {
 
@@ -28,7 +25,9 @@ class ServerConfig(mBuilder: Builder) {
             "soRcvbuf" to soRcvbuf.toString(),
             "soSndbuf" to soSndbuf.toString(),
             "maxContentLength" to maxContentLength.toString(),
-            "packageNameList" to packageNameList.toString())
+            "packageNameList" to packageNameList.toString(),
+            "successCode" to successCode.toString(),
+            "errorCode" to errorCode.toString())
 
     internal var enableSSL = mBuilder.mEnableSSL
     internal var enableCors = mBuilder.mEnableCors
@@ -56,6 +55,8 @@ class ServerConfig(mBuilder: Builder) {
     internal var packageNameList: MutableList<String> = mBuilder.mPackageNameList
     internal var server: IServer = mBuilder.mServer
     internal var serialize: Serialize = mBuilder.mSerialize
+    internal var successCode: Int = mBuilder.mSuccessCode
+    internal var errorCode: Int = mBuilder.mErrorCode
 
     companion object {
         internal var defaultServerConfig: ServerConfig = Builder().build()
@@ -63,49 +64,53 @@ class ServerConfig(mBuilder: Builder) {
 
     class Builder {
 
-        internal var mEnableSSL = Constant.DEFAULT_ENABLE_SSL
+        internal var mEnableSSL = DefaultConfig.DEFAULT_ENABLE_SSL
             private set
-        internal var mEnableCors = Constant.DEFAULT_ENABLE_CORS
+        internal var mEnableCors = DefaultConfig.DEFAULT_ENABLE_CORS
             private set
-        internal var mRootPath = Constant.DEFAULT_ROOT_PATH
+        internal var mRootPath = DefaultConfig.DEFAULT_ROOT_PATH
             private set
-        internal var mSign = Constant.DEFAULT_ENABLE_SIGN
+        internal var mSign = DefaultConfig.DEFAULT_ENABLE_SIGN
             private set
-        internal var mSalt = Constant.DEFAULT_SALT
+        internal var mSalt = DefaultConfig.DEFAULT_SALT
             private set
-        internal var mPort: Int = 8888
+        internal var mPort: Int = DefaultConfig.DEFAULT_PORT
             private set
-        internal var mDebug: Boolean = true
+        internal var mDebug: Boolean = DefaultConfig.DEFAULT_DEBUG
             private set
-        internal var mLogLevel: LogLevel = LogLevel.DEBUG
+        internal var mLogLevel: LogLevel = DefaultConfig.DEFAULT_LOG_LEVEL
             private set
-        internal var mBacklog: Int = Constant.DEFAULT_BACKLOG
+        internal var mBacklog: Int = DefaultConfig.DEFAULT_BACKLOG
             private set
-        internal var mTcpNodelay: Boolean = Constant.DEFAULT_TCP_NODELAY
+        internal var mTcpNodelay: Boolean = DefaultConfig.DEFAULT_TCP_NODELAY
             private set
-        internal var mSoKeepalive: Boolean = Constant.DEFAULT_SO_KEEPALIVE
+        internal var mSoKeepalive: Boolean = DefaultConfig.DEFAULT_SO_KEEPALIVE
             private set
-        internal var mSoReuseaddr: Boolean = Constant.DEFAULT_SO_REUSEADDR
+        internal var mSoReuseaddr: Boolean = DefaultConfig.DEFAULT_SO_REUSEADDR
             private set
-        internal var mSoRcvbuf: Int = Constant.DEFAULT_SO_RCVBUF
+        internal var mSoRcvbuf: Int = DefaultConfig.DEFAULT_SO_RCVBUF
             private set
-        internal var mSoSndbuf: Int = Constant.DEFAULT_SO_SNDBUF
+        internal var mSoSndbuf: Int = DefaultConfig.DEFAULT_SO_SNDBUF
             private set
-        internal var mMaxContentLength: Int = Constant.DEFAULT_MAX_CONTENT_LENGTH
+        internal var mMaxContentLength: Int = DefaultConfig.DEFAULT_MAX_CONTENT_LENGTH
             private set
-        internal var mCorePoolSize: Int = Constant.DEFAULT_CORE_POOL_SIZE
+        internal var mCorePoolSize: Int = DefaultConfig.DEFAULT_CORE_POOL_SIZE
             private set
-        internal var mMaximumPoolSize: Int = Constant.DEFAULT_MAXIMUM_POOL_SIZE
+        internal var mMaximumPoolSize: Int = DefaultConfig.DEFAULT_MAXIMUM_POOL_SIZE
             private set
-        internal var mWorkQueueCapacity: Int = Constant.DEFAULT_WORK_QUEUE_CAPACITY
+        internal var mWorkQueueCapacity: Int = DefaultConfig.DEFAULT_WORK_QUEUE_CAPACITY
             private set
-        internal var mLog: (level: LogLevel, content: String) -> Unit = LogManager.defaultLog
+        internal var mLog: (level: LogLevel, content: String) -> Unit = DefaultConfig.DEFAULT_DEFAULT_LOG
             private set
-        internal var mPackageNameList: MutableList<String> = mutableListOf()
+        internal var mPackageNameList: MutableList<String> = DefaultConfig.DEFAULT_PACKAGE_LIST
             private set
-        internal var mServer: IServer = JavaServer()
+        internal var mServer: IServer = DefaultConfig.DEFAULT_SERVER
             private set
-        internal var mSerialize: Serialize = GsonSerialize()
+        internal var mSerialize: Serialize = DefaultConfig.DEFAULT_SERIALIZER
+            private set
+        internal var mSuccessCode: Int = DefaultConfig.DEFAULT_SUCCESS_CODE
+            private set
+        internal var mErrorCode: Int = DefaultConfig.DEFAULT_ERROR_CODE_BUSINESS
             private set
 
         fun setEnableSSL(enableSSL: Boolean): Builder {
@@ -216,6 +221,16 @@ class ServerConfig(mBuilder: Builder) {
 
         fun setSerialize(serialize: Serialize): Builder {
             mSerialize = serialize
+            return this
+        }
+
+        fun setSuccessCode(successCode: Int): Builder {
+            mSuccessCode = successCode
+            return this
+        }
+
+        fun setErrorCode(errorCode: Int): Builder {
+            mErrorCode = errorCode
             return this
         }
 

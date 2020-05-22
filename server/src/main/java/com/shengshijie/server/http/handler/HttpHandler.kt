@@ -61,7 +61,7 @@ internal class HttpHandler : ChannelInboundHandlerAdapter() {
                 }
                 is RequestException -> {
                     ServerManager.mLogManager.e("request error: ${ExceptionUtils.toString(e)}")
-                    HttpResponseUtil.writeFail(response, HttpResponseStatus.BAD_REQUEST, "request error: ${e.message}")
+                    HttpResponseUtil.writeFailResponse(response, msg = "${e.message}")
                 }
                 is ServerException -> {
                     ServerManager.mLogManager.e("internal server error: ${ExceptionUtils.toString(e)}")
