@@ -18,38 +18,36 @@ class SignFilter : Filter {
     private val nonceList = mutableListOf<String>()
 
     override fun preFilter(request: IHttpRequest, response: IHttpResponse): Boolean {
-        ServerManager.mLogManager.i("preFilter ${request.uri()} ${response.content().toString(CharsetUtil.UTF_8)}")
-        val parameterMap = HttpRequestUtil.getParameterMap(request)
-        val nonce = parameterMap[nonceKey]?.firstOrNull() ?: ""
-        if (nonce.isBlank()) throw BusinessException("request nonce param")
-        if (nonceList.contains(nonce)) throw BusinessException("duplicate request")
-        nonceList.add(nonce)
-        val start = parameterMap[timeKey]?.firstOrNull()?.toLong() ?: 0L
-        val now = System.currentTimeMillis()
-        if (now - start > expireTime || start > now) throw BusinessException("request expired")
-        val sign = parameterMap[signKey]?.firstOrNull() ?: throw BusinessException("not signed")
-        parameterMap.remove(signKey)
-        val signLocal = getParamSign(parameterMap)
-        if (sign != signLocal) throw BusinessException("incorrect sign")
+        signAuthentication(request, response)
         return false
     }
 
     override fun postFilter(request: IHttpRequest, response: IHttpResponse) {
         ServerManager.mLogManager.i("postFilter ${request.uri()} ${response.content().toString(CharsetUtil.UTF_8)}")
-        super.postFilter(request, response)
     }
 
-    private fun getParamSign(map: MutableMap<String, MutableList<String>?>): String? {
-        val params = mutableMapOf<String, Any?>()
-        map.forEach {
-            params[it.key] = it.value?.firstOrNull()
-        }
-        val keys = params.keys.toMutableList()
+    private fun signAuthentication(request: IHttpRequest, response: IHttpResponse) {
+        ServerManager.mLogManager.i("preFilter ${request.uri()} ${response.content().toString(CharsetUtil.UTF_8)}")
+        val paramMap = request.getParamMap()
+        val nonce = paramMap[nonceKey] ?: ""
+        if (nonce.isBlank()) throw BusinessException("request param [$nonceKey]")
+        if (nonceList.contains(nonce)) throw BusinessException("duplicate request")
+        nonceList.add(nonce)
+        val start = paramMap[timeKey]?.toLong() ?: throw BusinessException("request param [$timeKey]")
+        val now = System.currentTimeMillis()
+        if (now - start > expireTime || start > now) throw BusinessException("request expired")
+        val sign = paramMap[signKey] ?: throw BusinessException("request param [$signKey]")
+        paramMap.remove(signKey)
+        if (sign != getParamSign(paramMap)) throw BusinessException("incorrect sign")
+    }
+
+    private fun getParamSign(map: MutableMap<String, String?>): String? {
+        val keys = map.keys.toMutableList()
         keys.sortBy { it }
         val sign = StringBuilder()
         for (key in keys) {
-            if (params[key] != null) {
-                sign.append(key).append("=").append(params[key]).append("&")
+            if (map[key] != null) {
+                sign.append(key).append("=").append(map[key]).append("&")
             }
         }
         sign.deleteCharAt(sign.lastIndex)

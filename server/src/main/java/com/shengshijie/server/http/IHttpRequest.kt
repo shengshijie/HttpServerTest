@@ -15,4 +15,5 @@ interface IHttpRequest {
     fun content(): ByteBuf
     fun headers(): HttpHeaders
     fun protocolVersion(): HttpVersion
+    fun getParamMap():  MutableMap<String, String?>
 }

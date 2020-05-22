@@ -31,7 +31,7 @@ class Router(var invoker: Invoker) {
                 }
             }
             for (i in 1 until invoker.args.size) {
-                HttpRequestUtil.getParameterMap(request)[invoker.args[i].name]?.apply { allArgs.add(this[0]) }
+                request.getParamMap()[invoker.args[i].name]?.apply { allArgs.add(this) }
                         ?: missingArgs.add(invoker.args[i].name)
             }
             if (missingArgs.isNotEmpty()) {

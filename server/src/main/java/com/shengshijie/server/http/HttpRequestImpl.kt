@@ -1,9 +1,18 @@
 package com.shengshijie.server.http
 
+import com.shengshijie.server.http.utils.HttpRequestUtil
 import io.netty.buffer.ByteBuf
 import io.netty.handler.codec.http.*
 
 class HttpRequestImpl(val fullHttpRequest: FullHttpRequest) : IHttpRequest {
+
+    private val mParams by lazy {
+        val params = mutableMapOf<String, String?>()
+        HttpRequestUtil.getParameterMap(this).forEach {
+            params[it.key] = it.value?.firstOrNull()
+        }
+        params
+    }
 
     override fun method(): HttpMethod {
         return fullHttpRequest.method()
@@ -35,6 +44,10 @@ class HttpRequestImpl(val fullHttpRequest: FullHttpRequest) : IHttpRequest {
 
     override fun protocolVersion(): HttpVersion {
         return fullHttpRequest.protocolVersion()
+    }
+
+    override fun getParamMap(): MutableMap<String, String?> {
+        return mParams
     }
 
 }
