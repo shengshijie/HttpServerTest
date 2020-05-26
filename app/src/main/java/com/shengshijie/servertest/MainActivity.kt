@@ -113,8 +113,8 @@ class MainActivity : AppCompatActivity() {
         })
         findViewById<View>(R.id.startServer).setOnClickListener {
             ServerManager.start(ServerConfig.Builder()
-                    .setPort(8888)
                     .setServer(AndroidServer(this@MainActivity))
+                    .setPort(8888)
                     .setDebug(true)
                     .setEnableSSL(true)
                     .setEnableCors(true)

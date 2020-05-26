@@ -11,7 +11,7 @@ import com.shengshijie.servertest.Person
 @RequestMapping(value = "/kotlin")
 class KotlinController {
     @RequestMapping(value = "/post1", method = "POST")
-    fun post1(@Param(value = "amount") amount: String, name: String, age: String): Any {
+    fun post1(@Param(value = "amount",required = false,defaultValue = "12") amount: String, name: String, age: String): Any {
         return "$amount|$name|$age"
     }
 

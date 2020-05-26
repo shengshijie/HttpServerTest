@@ -9,6 +9,7 @@ import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.filter.SignFilter
 import com.shengshijie.server.http.scanner.IPackageScanner
 import java.util.*
+import kotlin.reflect.KParameter
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
@@ -36,8 +37,13 @@ internal class RouterManager {
                         if (path != null && !functionHandlerMap.containsKey(path)) {
                             val params = arrayListOf<Parameter>()
                             func.parameters.forEach { param ->
-                                params.add(Parameter(param.findAnnotation<Param>()?.value
-                                        ?: param.name, param.type))
+                                if (param.kind !== KParameter.Kind.INSTANCE) {
+                                    params.add(Parameter(
+                                            name = param.findAnnotation<Param>()?.value ?: param.name,
+                                            type = param.type,
+                                            required = param.findAnnotation<Param>()?.required ?: true,
+                                            defaultValue = param.findAnnotation<Param>()?.defaultValue ?: ""))
+                                }
                             }
                             val router = Router(Invoker(func, clazz.createInstance(), params))
                             if (ServerManager.mServerConfig.sign) router.addFilters(arrayListOf(SignFilter()))

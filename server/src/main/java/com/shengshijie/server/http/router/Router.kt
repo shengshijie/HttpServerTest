@@ -30,9 +30,9 @@ internal class Router(var invoker: Invoker) {
                     return
                 }
             }
-            for (i in 1 until invoker.args.size) {
-                request.getParamMap()[invoker.args[i].name]?.apply { allArgs.add(this) }
-                        ?: missingArgs.add(invoker.args[i].name)
+            for (arg in invoker.args) {
+                request.getParamMap()[arg.name]?.apply { allArgs.add(this) }
+                        ?: if (arg.required) missingArgs.add(arg.name) else allArgs.add(arg.defaultValue)
             }
             if (missingArgs.isNotEmpty()) {
                 throw RequestException("missing parameter: [${missingArgs.joinToString()}]")
