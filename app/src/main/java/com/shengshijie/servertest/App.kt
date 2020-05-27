@@ -6,10 +6,15 @@ import com.didichuxing.doraemonkit.DoraemonKit
 
 class App : Application() {
 
+    companion object {
+        lateinit var instance: App
+    }
+
     override fun onCreate() {
         super.onCreate()
+        instance = this
         MultiDex.install(this)
-        DoraemonKit.install(this, mutableListOf(),"pId");
+        DoraemonKit.install(this, mutableListOf(), "pId");
     }
 
 }

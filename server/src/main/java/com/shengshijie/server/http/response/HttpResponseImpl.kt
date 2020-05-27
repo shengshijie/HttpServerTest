@@ -1,6 +1,5 @@
 package com.shengshijie.server.http.response
 
-import com.shengshijie.server.http.response.IHttpResponse
 import io.netty.buffer.ByteBuf
 import io.netty.handler.codec.http.*
 

@@ -2,13 +2,14 @@ package com.shengshijie.server.http.router
 
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.common.Pair
-import com.shengshijie.server.http.request.IHttpRequest
-import com.shengshijie.server.http.response.IHttpResponse
 import com.shengshijie.server.http.exception.BusinessException
 import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.exception.ServerException
 import com.shengshijie.server.http.filter.Filter
-import com.shengshijie.server.http.response.RawResponse
+import com.shengshijie.server.http.request.IHttpRequest
+import com.shengshijie.server.http.response.ByteArrayResponse
+import com.shengshijie.server.http.response.IHttpResponse
+import com.shengshijie.server.http.response.SerializedResponse
 import com.shengshijie.server.http.utils.ExceptionUtil
 import com.shengshijie.server.http.utils.HttpResponseUtil
 import java.lang.reflect.InvocationTargetException
@@ -41,8 +42,11 @@ internal class Router(var invoker: Invoker) {
                 is Pair<*, *> -> {
                     HttpResponseUtil.writeOKResponse(response, obj.second, obj.first.toString())
                 }
-                is RawResponse -> {
+                is SerializedResponse -> {
                     HttpResponseUtil.writeRawResponse(response, obj.content)
+                }
+                is ByteArrayResponse -> {
+                    HttpResponseUtil.writeByteArrayResponse(response, obj.content,obj.contentType)
                 }
                 is BusinessException -> {
                     HttpResponseUtil.writeFailResponse(response, obj.code, "${obj.message}")

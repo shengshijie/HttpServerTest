@@ -4,7 +4,7 @@ import com.shengshijie.server.http.annotation.Controller;
 import com.shengshijie.server.http.annotation.Param;
 import com.shengshijie.server.http.annotation.RequestMapping;
 import com.shengshijie.server.http.exception.BusinessException;
-import com.shengshijie.server.http.response.RawResponse;
+import com.shengshijie.server.http.response.SerializedResponse;
 
 @Controller
 @RequestMapping(value = "/java")
@@ -15,7 +15,7 @@ public class TestController {
         if(age.equals("18")){
             throw new BusinessException("ddd");
         }
-       return new RawResponse(null);
+       return new SerializedResponse(null);
     }
 
 }

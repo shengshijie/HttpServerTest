@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                     .setServer(AndroidServer(this@MainActivity))
                     .setPort(8888)
                     .setDebug(true)
-                    .setEnableSSL(true)
+                    .setEnableSSL(false)
                     .setEnableCors(true)
                     .setSign(false)
                     .setRootPath("/api")
