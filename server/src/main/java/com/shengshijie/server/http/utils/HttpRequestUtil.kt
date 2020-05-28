@@ -41,7 +41,7 @@ internal object HttpRequestUtil {
                         jsonObject.keys().forEach {
                             val value = jsonObject.get(it)
                             val valueList: MutableList<String> = paramMap[it] ?: mutableListOf()
-                            if (PrimitiveTypeUtil.isPriType(value)) {
+                            if (PrimitiveTypeUtil.isPriType(value.javaClass.kotlin)) {
                                 valueList.add(value.toString())
                                 paramMap[it] = valueList
                             }

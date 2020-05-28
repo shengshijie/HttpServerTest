@@ -9,23 +9,23 @@ import com.shengshijie.server.http.response.SerializedResponse
 import com.shengshijie.servertest.App
 import com.shengshijie.servertest.Person
 import com.shengshijie.servertest.loadAssets
-import com.shengshijie.servertest.requset.Post2Request
+import com.shengshijie.servertest.requset.TestRequest
 
 @Controller
 @RequestMapping(value = "/kotlin")
 class KotlinController {
     @RequestMapping(value = "/post1", method = "POST")
-    fun post1(@RequestParam(value = "amount", required = false, defaultValue = "12") amount: String, name: String, age: String): Any {
-        return "$amount|$name|$age"
+    fun post1(@RequestParam(value = "amount", required = false, defaultValue = "12") amount: Double, age: Int): Any {
+        return "$amount|$age"
     }
 
     @RequestMapping(value = "/post2", method = "POST")
-    fun post2(@RequestBody post2Request: Post2Request) : Any{
-        return  SerializedResponse(post2Request)
+    fun post2(@RequestBody testRequest: TestRequest): Any {
+        return SerializedResponse(testRequest)
     }
 
     @RequestMapping(value = "/get1", method = "GET")
-    fun get1(amount: String): Any {
+    fun get1(amount: Int): Any {
         return SerializedResponse(Person(null, "34"))
     }
 

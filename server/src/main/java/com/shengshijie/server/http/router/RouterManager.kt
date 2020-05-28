@@ -9,11 +9,13 @@ import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.filter.SignFilter
 import com.shengshijie.server.http.request.IHttpRequest
 import com.shengshijie.server.http.scanner.IPackageScanner
+import com.shengshijie.server.http.utils.PrimitiveTypeUtil
 import java.util.*
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.declaredMemberFunctions
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.jvm.jvmErasure
 
 internal class RouterManager {
 
@@ -41,13 +43,26 @@ internal class RouterManager {
                                 if (param.kind !== KParameter.Kind.INSTANCE) {
                                     params.add(Parameter(
                                             hasRequestBody = param.findAnnotation<RequestBody>() != null,
-                                            name = param.findAnnotation<RequestParam>()?.value ?: param.name,
-                                            type = param.type,
-                                            required = param.findAnnotation<RequestParam>()?.required ?: true,
-                                            defaultValue = param.findAnnotation<RequestParam>()?.defaultValue ?: ""))
+                                            name = param.findAnnotation<RequestParam>()?.value
+                                                    ?: param.name,
+                                            clazz = param.type.jvmErasure,
+                                            required = param.findAnnotation<RequestParam>()?.required
+                                                    ?: true,
+                                            defaultValue = param.findAnnotation<RequestParam>()?.defaultValue
+                                                    ?: ""))
                                 }
                             }
-                            if (params.any { it.hasRequestBody } && params.size > 1) {
+                            var requestBodySize = 0
+                            for (param in params) {
+                                if (param.hasRequestBody) {
+                                    requestBodySize++
+                                } else {
+                                    if (!PrimitiveTypeUtil.isPriType(param.clazz)) {
+                                        throw RuntimeException("request must be primitive type:[${clazz.simpleName} ${func.name}(${params.map { it.name }.joinToString()})]")
+                                    }
+                                }
+                            }
+                            if (requestBodySize > 0 && params.size > 1) {
                                 throw RuntimeException("request body must have only one parameter:[${clazz.simpleName} ${func.name}(${params.map { it.name }.joinToString()})]")
                             }
                             val router = Router(Invoker(func, clazz.createInstance(), params))

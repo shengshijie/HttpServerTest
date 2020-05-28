@@ -1,11 +1,11 @@
 package com.shengshijie.server.http.serialize
 
-import kotlin.reflect.KType
+import kotlin.reflect.KClass
 
 interface Serialize {
 
-    fun <T> serialize(t: T): String
+    fun  serialize(any: Any?): String
 
-    fun <T> deserialization(string: String, clazz: KType): T?
+    fun  deserialization(string: String, clazz: KClass<*>): Any?
 
 }

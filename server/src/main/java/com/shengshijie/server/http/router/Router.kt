@@ -11,6 +11,7 @@ import com.shengshijie.server.http.response.ByteArrayResponse
 import com.shengshijie.server.http.response.IHttpResponse
 import com.shengshijie.server.http.response.SerializedResponse
 import com.shengshijie.server.http.utils.HttpResponseUtil
+import com.shengshijie.server.http.utils.PrimitiveTypeUtil
 import java.lang.reflect.InvocationTargetException
 
 internal class Router(var invoker: Invoker) {
@@ -31,13 +32,14 @@ internal class Router(var invoker: Invoker) {
                 }
             }
             for (arg in invoker.args) {
-                request.getParamMap()[arg.name]?.apply { allArgs.add(this) }
-                        ?: if (arg.required) missingArgs.add(arg.name) else allArgs.add(arg.defaultValue)
+                request.getParamMap()[arg.name]?.apply {
+                    allArgs.add(PrimitiveTypeUtil.convert(this, arg.clazz))
+                } ?: if (arg.required) missingArgs.add(arg.name) else allArgs.add(arg.defaultValue)
                 if (arg.hasRequestBody) {
                     missingArgs.clear()
                     allArgs.clear()
-                    val requestBody: Any = ServerManager.mSerialize.deserialization(request.uft8Content(), arg.type)
-                            ?: throw RequestException("missing parameter: [${arg.type}]")
+                    val requestBody: Any = ServerManager.mSerialize.deserialization(request.uft8Content(), arg.clazz)
+                            ?: throw RequestException("missing parameter: [${arg.clazz}]")
                     allArgs.add(requestBody)
                     break
                 }
@@ -76,10 +78,10 @@ internal class Router(var invoker: Invoker) {
                             ?: ServerManager.mServerConfig.errorCode)
                 }
                 is IllegalArgumentException -> {
-                    throw RequestException("parameter number mismatch")
+                    throw RequestException("illegal argument: ${exception.message}")
                 }
                 else -> {
-                    throw ServerException("server error: [${exception.message}]")
+                    throw ServerException("unknown error: [${exception.message}]")
                 }
             }
         } finally {
