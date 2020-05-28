@@ -1,3 +1,5 @@
 package com.shengshijie.server.http.router
 
-internal class Parameter(val name: String?, val type: Any, val required: Boolean, val defaultValue: String)
+import kotlin.reflect.KType
+
+internal class Parameter(val hasRequestBody: Boolean = false, val name: String?, val type: KType, val required: Boolean, val defaultValue: String)

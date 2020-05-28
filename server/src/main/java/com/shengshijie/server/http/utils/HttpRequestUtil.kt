@@ -1,14 +1,14 @@
 package com.shengshijie.server.http.utils
 
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONArray
 import com.shengshijie.server.http.request.IHttpRequest
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.netty.handler.codec.http.HttpHeaderValues
 import io.netty.handler.codec.http.HttpMethod
 import io.netty.handler.codec.http.QueryStringDecoder
 import io.netty.util.CharsetUtil
-import java.lang.reflect.Array
+import org.json.JSONArray
+import org.json.JSONObject
+import org.json.JSONTokener
 import java.util.*
 
 internal object HttpRequestUtil {
@@ -26,49 +26,37 @@ internal object HttpRequestUtil {
         return paramMap
     }
 
-    private fun getPostParamMap(fullRequest: IHttpRequest): MutableMap<String, MutableList<String>?> {
+    private fun getPostParamMap(request: IHttpRequest): MutableMap<String, MutableList<String>?> {
         var paramMap: MutableMap<String, MutableList<String>?> = HashMap()
-        val contentType = fullRequest.headers()[HttpHeaderNames.CONTENT_TYPE] ?: return paramMap
-        when (contentType.split(";").toTypedArray()[0]) {
-            HttpHeaderValues.APPLICATION_JSON.toString() -> {
-                for ((key, value) in JSON.parseObject(fullRequest.content().toString(CharsetUtil.UTF_8))) {
-                    var valueList: MutableList<String>? = if (paramMap.containsKey(key)) paramMap[key] else ArrayList()
-                    when {
-                        PrimitiveTypeUtil.isPriType(value) -> {
-                            valueList?.add(value.toString())
-                            paramMap[key] = valueList
-                        }
-                        PrimitiveTypeUtil.isPriArrayType(value) -> {
-                            val length = Array.getLength(value)
-                            for (i in 0 until length) {
-                                valueList?.add(Array.get(value, i).toString())
-                            }
-                            paramMap[key] = valueList
-                        }
-                        value is MutableList<*> -> {
-                            if (value == JSONArray::class) {
-                                val jArray = JSONArray.parseArray(value.toString())
-                                for (i in jArray.indices) {
-                                    valueList?.add(jArray.getString(i))
-                                }
-                            } else {
-                                valueList = value as ArrayList<String>
-                            }
-                            paramMap[key] = valueList
-                        }
-                        value is MutableMap<*, *> -> {
-                            val tempMap = value as Map<String, String>
-                            for ((key1, value1) in tempMap) {
-                                val tempList: MutableList<String> = ArrayList()
-                                tempList.add(value1)
-                                paramMap[key1] = tempList
+        val contentTypes = request.headers()[HttpHeaderNames.CONTENT_TYPE]
+                ?.split(";")
+                ?.toTypedArray()
+                ?: return paramMap
+        val uft8Content = request.uft8Content()
+        when (true) {
+            contentTypes.contains(HttpHeaderValues.APPLICATION_JSON.toString()) -> {
+                when (JSONTokener(uft8Content).nextValue()) {
+                    is JSONObject -> {
+                        val jsonObject = JSONObject(uft8Content)
+                        jsonObject.keys().forEach {
+                            val value = jsonObject.get(it)
+                            val valueList: MutableList<String> = paramMap[it] ?: mutableListOf()
+                            if (PrimitiveTypeUtil.isPriType(value)) {
+                                valueList.add(value.toString())
+                                paramMap[it] = valueList
                             }
                         }
                     }
+                    is JSONArray -> {
+                        throw RuntimeException("jsonArray not support,please use request body")
+                    }
+                    else -> {
+                        throw RuntimeException("unsupported format")
+                    }
                 }
             }
-            HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString() -> {
-                paramMap = QueryStringDecoder(fullRequest.content().toString(CharsetUtil.UTF_8), false).parameters()
+            contentTypes.contains(HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString()) -> {
+                paramMap = QueryStringDecoder(uft8Content, false).parameters()
             }
         }
         return paramMap

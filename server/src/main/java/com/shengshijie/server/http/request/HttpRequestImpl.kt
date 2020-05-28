@@ -3,6 +3,7 @@ package com.shengshijie.server.http.request
 import com.shengshijie.server.http.utils.HttpRequestUtil
 import io.netty.buffer.ByteBuf
 import io.netty.handler.codec.http.*
+import io.netty.util.CharsetUtil
 
 internal class HttpRequestImpl(val fullHttpRequest: FullHttpRequest) : IHttpRequest {
 
@@ -48,6 +49,10 @@ internal class HttpRequestImpl(val fullHttpRequest: FullHttpRequest) : IHttpRequ
 
     override fun getParamMap(): MutableMap<String, String?> {
         return mParams
+    }
+
+    override fun uft8Content(): String {
+        return fullHttpRequest.content().toString(CharsetUtil.UTF_8)
     }
 
 }

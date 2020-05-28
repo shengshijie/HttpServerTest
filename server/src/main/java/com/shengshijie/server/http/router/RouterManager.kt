@@ -2,8 +2,9 @@ package com.shengshijie.server.http.router
 
 import com.shengshijie.server.ServerManager
 import com.shengshijie.server.http.annotation.Controller
-import com.shengshijie.server.http.annotation.Param
+import com.shengshijie.server.http.annotation.RequestBody
 import com.shengshijie.server.http.annotation.RequestMapping
+import com.shengshijie.server.http.annotation.RequestParam
 import com.shengshijie.server.http.exception.RequestException
 import com.shengshijie.server.http.filter.SignFilter
 import com.shengshijie.server.http.request.IHttpRequest
@@ -35,14 +36,15 @@ internal class RouterManager {
                     func.findAnnotation<RequestMapping>()?.apply {
                         val path: Path? = Path.make(this, requestMappingAnnotation)
                         if (path != null && !functionHandlerMap.containsKey(path)) {
-                            val params = arrayListOf<Parameter>()
-                            func.parameters.forEach { param ->
+                            val params = mutableListOf<Parameter>()
+                            for (param in func.parameters) {
                                 if (param.kind !== KParameter.Kind.INSTANCE) {
                                     params.add(Parameter(
-                                            name = param.findAnnotation<Param>()?.value ?: param.name,
+                                            hasRequestBody = param.findAnnotation<RequestBody>() != null,
+                                            name = param.findAnnotation<RequestParam>()?.value ?: param.name,
                                             type = param.type,
-                                            required = param.findAnnotation<Param>()?.required ?: true,
-                                            defaultValue = param.findAnnotation<Param>()?.defaultValue ?: ""))
+                                            required = param.findAnnotation<RequestParam>()?.required ?: true,
+                                            defaultValue = param.findAnnotation<RequestParam>()?.defaultValue ?: ""))
                                 }
                             }
                             val router = Router(Invoker(func, clazz.createInstance(), params))

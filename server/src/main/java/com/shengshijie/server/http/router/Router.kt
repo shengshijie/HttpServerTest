@@ -10,7 +10,6 @@ import com.shengshijie.server.http.request.IHttpRequest
 import com.shengshijie.server.http.response.ByteArrayResponse
 import com.shengshijie.server.http.response.IHttpResponse
 import com.shengshijie.server.http.response.SerializedResponse
-import com.shengshijie.server.http.utils.ExceptionUtil
 import com.shengshijie.server.http.utils.HttpResponseUtil
 import java.lang.reflect.InvocationTargetException
 
@@ -34,6 +33,14 @@ internal class Router(var invoker: Invoker) {
             for (arg in invoker.args) {
                 request.getParamMap()[arg.name]?.apply { allArgs.add(this) }
                         ?: if (arg.required) missingArgs.add(arg.name) else allArgs.add(arg.defaultValue)
+                if (arg.hasRequestBody) {
+                    missingArgs.clear()
+                    allArgs.clear()
+                    val requestBody: Any = ServerManager.mSerialize.deserialization(request.uft8Content(), arg.type)
+                            ?: throw RequestException("missing parameter: [${arg.type}]")
+                    allArgs.add(requestBody)
+                    break
+                }
             }
             if (missingArgs.isNotEmpty()) {
                 throw RequestException("missing parameter: [${missingArgs.joinToString()}]")
@@ -46,7 +53,7 @@ internal class Router(var invoker: Invoker) {
                     HttpResponseUtil.writeRawResponse(response, obj.content)
                 }
                 is ByteArrayResponse -> {
-                    HttpResponseUtil.writeByteArrayResponse(response, obj.content,obj.contentType)
+                    HttpResponseUtil.writeByteArrayResponse(response, obj.content, obj.contentType)
                 }
                 is BusinessException -> {
                     HttpResponseUtil.writeFailResponse(response, obj.code, "${obj.message}")
@@ -68,8 +75,11 @@ internal class Router(var invoker: Invoker) {
                             ?: "", (exception.targetException as? BusinessException)?.code
                             ?: ServerManager.mServerConfig.errorCode)
                 }
+                is IllegalArgumentException -> {
+                    throw RequestException("parameter number mismatch")
+                }
                 else -> {
-                    throw ServerException("server error: [${ExceptionUtil.toString(exception)}]")
+                    throw ServerException("server error: [${exception.message}]")
                 }
             }
         } finally {

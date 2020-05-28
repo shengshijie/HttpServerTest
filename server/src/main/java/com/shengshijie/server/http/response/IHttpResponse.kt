@@ -12,4 +12,5 @@ interface IHttpResponse {
     fun setProtocolVersion(version: HttpVersion): HttpResponse
     fun content(): ByteBuf
     fun headers(): HttpHeaders
+    fun uft8Content(): String
 }

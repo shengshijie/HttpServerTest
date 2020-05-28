@@ -16,4 +16,5 @@ interface IHttpRequest {
     fun headers(): HttpHeaders
     fun protocolVersion(): HttpVersion
     fun getParamMap():  MutableMap<String, String?>
+    fun uft8Content(): String
 }

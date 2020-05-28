@@ -22,20 +22,20 @@ internal class SignFilter : Filter {
     }
 
     override fun postFilter(request: IHttpRequest, response: IHttpResponse) {
-        ServerManager.mLogManager.i("postFilter ${request.uri()} ${response.content().toString(CharsetUtil.UTF_8)}")
+        ServerManager.mLogManager.i("postFilter ${request.uri()} ${response.uft8Content()}")
     }
 
     private fun signAuthentication(request: IHttpRequest, response: IHttpResponse) {
-        ServerManager.mLogManager.i("preFilter ${request.uri()} ${response.content().toString(CharsetUtil.UTF_8)}")
+        ServerManager.mLogManager.i("preFilter ${request.uri()} ${response.uft8Content()}")
         val paramMap = request.getParamMap()
         val nonce = paramMap[nonceKey] ?: ""
-        if (nonce.isBlank()) throw BusinessException("request param [$nonceKey]")
+        if (nonce.isBlank()) throw BusinessException("request parameter [$nonceKey]")
         if (nonceList.contains(nonce)) throw BusinessException("duplicate request")
         nonceList.add(nonce)
-        val start = paramMap[timeKey]?.toLong() ?: throw BusinessException("request param [$timeKey]")
+        val start = paramMap[timeKey]?.toLong() ?: throw BusinessException("request parameter [$timeKey]")
         val now = System.currentTimeMillis()
         if (now - start > expireTime || start > now) throw BusinessException("request expired")
-        val sign = paramMap[signKey] ?: throw BusinessException("request param [$signKey]")
+        val sign = paramMap[signKey] ?: throw BusinessException("request parameter [$signKey]")
         paramMap.remove(signKey)
         if (sign != getParamSign(paramMap)) throw BusinessException("incorrect sign")
     }

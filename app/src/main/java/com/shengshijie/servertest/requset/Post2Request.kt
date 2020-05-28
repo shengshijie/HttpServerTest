@@ -1,9 +1,6 @@
 package com.shengshijie.servertest.requset
 
-class Post2Request {
+data class Post2Request(var name: String = "", var age: String = "", var amount: String = "") {
 
-    var name = ""
-    var age = ""
-    var amount = ""
 
 }

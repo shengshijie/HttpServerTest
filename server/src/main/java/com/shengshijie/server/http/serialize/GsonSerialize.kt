@@ -1,6 +1,7 @@
 package com.shengshijie.server.http.serialize
 
-import java.lang.reflect.Type
+import kotlin.reflect.KType
+import kotlin.reflect.jvm.javaType
 
 internal class GsonSerialize : Serialize {
 
@@ -8,8 +9,8 @@ internal class GsonSerialize : Serialize {
         return GsonInstance.gson.toJson(t)
     }
 
-    override fun <T> deserialization(string: String, clazz: Type): T {
-        return GsonInstance.gson.fromJson(string, clazz)
+    override fun <T> deserialization(string: String, clazz: KType): T? {
+        return GsonInstance.gson.fromJson(string, clazz.javaType)
     }
 
 }

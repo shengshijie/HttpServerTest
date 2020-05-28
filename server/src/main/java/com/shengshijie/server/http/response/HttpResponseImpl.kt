@@ -2,6 +2,7 @@ package com.shengshijie.server.http.response
 
 import io.netty.buffer.ByteBuf
 import io.netty.handler.codec.http.*
+import io.netty.util.CharsetUtil
 
 internal class HttpResponseImpl(val fullHttpResponse: FullHttpResponse) : IHttpResponse {
 
@@ -23,6 +24,10 @@ internal class HttpResponseImpl(val fullHttpResponse: FullHttpResponse) : IHttpR
 
     override fun headers(): HttpHeaders {
         return fullHttpResponse.headers()
+    }
+
+    override fun uft8Content(): String {
+        return fullHttpResponse.content().toString(CharsetUtil.UTF_8)
     }
 
 }
