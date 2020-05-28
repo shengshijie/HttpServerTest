@@ -47,6 +47,9 @@ internal class RouterManager {
                                             defaultValue = param.findAnnotation<RequestParam>()?.defaultValue ?: ""))
                                 }
                             }
+                            if (params.any { it.hasRequestBody } && params.size > 1) {
+                                throw RuntimeException("request body must have only one parameter:[${clazz.simpleName} ${func.name}(${params.map { it.name }.joinToString()})]")
+                            }
                             val router = Router(Invoker(func, clazz.createInstance(), params))
                             if (ServerManager.mServerConfig.sign) router.addFilters(arrayListOf(SignFilter()))
                             functionHandlerMap[path] = router

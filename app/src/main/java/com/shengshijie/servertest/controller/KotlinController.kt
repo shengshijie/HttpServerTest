@@ -4,7 +4,6 @@ import com.shengshijie.server.http.annotation.Controller
 import com.shengshijie.server.http.annotation.RequestBody
 import com.shengshijie.server.http.annotation.RequestMapping
 import com.shengshijie.server.http.annotation.RequestParam
-import com.shengshijie.server.http.exception.BusinessException
 import com.shengshijie.server.http.response.ByteArrayResponse
 import com.shengshijie.server.http.response.SerializedResponse
 import com.shengshijie.servertest.App
@@ -21,8 +20,8 @@ class KotlinController {
     }
 
     @RequestMapping(value = "/post2", method = "POST")
-    fun post2(@RequestBody post2Request: Post2Request) {
-        throw BusinessException("post2: $post2Request", 205)
+    fun post2(@RequestBody post2Request: Post2Request) : Any{
+        return  SerializedResponse(post2Request)
     }
 
     @RequestMapping(value = "/get1", method = "GET")

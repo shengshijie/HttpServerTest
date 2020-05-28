@@ -5,7 +5,6 @@ import com.shengshijie.server.http.exception.BusinessException
 import com.shengshijie.server.http.request.IHttpRequest
 import com.shengshijie.server.http.response.IHttpResponse
 import io.netty.buffer.ByteBufUtil
-import io.netty.util.CharsetUtil
 import java.security.MessageDigest
 
 internal class SignFilter : Filter {

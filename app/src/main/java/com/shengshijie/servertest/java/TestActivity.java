@@ -1,13 +1,13 @@
 package com.shengshijie.servertest.java;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
-import com.shengshijie.servertest.R;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.shengshijie.server.ServerManager;
 import com.shengshijie.server.http.config.ServerConfig;
 import com.shengshijie.server.platform.android.AndroidServer;
+import com.shengshijie.servertest.R;
 
 import java.util.ArrayList;
 import java.util.List;

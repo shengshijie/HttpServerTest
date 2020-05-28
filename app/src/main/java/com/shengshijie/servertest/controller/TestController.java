@@ -1,8 +1,8 @@
 package com.shengshijie.servertest.controller;
 
 import com.shengshijie.server.http.annotation.Controller;
-import com.shengshijie.server.http.annotation.RequestParam;
 import com.shengshijie.server.http.annotation.RequestMapping;
+import com.shengshijie.server.http.annotation.RequestParam;
 import com.shengshijie.server.http.exception.BusinessException;
 import com.shengshijie.server.http.response.SerializedResponse;
 

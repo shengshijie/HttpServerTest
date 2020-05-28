@@ -4,7 +4,8 @@ import com.shengshijie.servertest.requset.BaseRequest
 import com.shengshijie.servertest.requset.PasswordRequest
 import com.shengshijie.servertest.requset.SetAmountRequest
 import retrofit2.Response
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface ApiService {
 
