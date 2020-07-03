@@ -1,5 +1,7 @@
 package com.shengshijie.servertest.response
 
-class SetAmountResponse : BaseResponse() {
+class SetAmountResponse {
+
+    var orderNumber: String= ""
 
 }

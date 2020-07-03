@@ -1,8 +1,9 @@
 package com.shengshijie.servertest.api
 
-import com.shengshijie.servertest.requset.BaseRequest
-import com.shengshijie.servertest.requset.PasswordRequest
-import com.shengshijie.servertest.requset.SetAmountRequest
+import com.shengshijie.servertest.requset.*
+import com.shengshijie.servertest.response.BaseResponse
+import com.shengshijie.servertest.response.PayResultResponse
+import com.shengshijie.servertest.response.SetAmountResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -10,24 +11,30 @@ import retrofit2.http.POST
 interface ApiService {
 
     @POST("api/pay/init")
-    suspend fun init(@Body request: BaseRequest): Response<BaseResponse>
+    suspend fun init(@Body request: BaseRequest): Response<BaseResponse<Unit>>
 
     @POST("api/pay/setAmount")
-    suspend fun setAmount(@Body request: SetAmountRequest): Response<SetAmountResponse>
+    suspend fun setAmount(@Body request: SetAmountRequest): Response<BaseResponse<SetAmountResponse>>
 
     @POST("api/pay/start")
-    suspend fun start(@Body request: BaseRequest): Response<BaseResponse>
+    suspend fun start(@Body request: StartRequest): Response<BaseResponse<PayResultResponse>>
+
+    @POST("api/pay/changeAmount")
+    suspend fun changeAmount(@Body request: ChangeAmountRequest): Response<BaseResponse<Unit>>
 
     @POST("api/pay/verifyPassword")
-    suspend fun verifyPassword(@Body request: PasswordRequest): Response<BaseResponse>
+    suspend fun verifyPassword(@Body request: PasswordRequest): Response<BaseResponse<PayResultResponse>>
 
     @POST("api/pay/cancel")
-    suspend fun cancel(@Body request: BaseRequest): Response<BaseResponse>
+    suspend fun cancel(@Body request: BaseRequest): Response<BaseResponse<Unit>>
 
     @POST("api/pay/destroy")
-    suspend fun destroy(@Body request: BaseRequest): Response<BaseResponse>
+    suspend fun destroy(@Body request: BaseRequest): Response<BaseResponse<Unit>>
+
+    @POST("api/media/setFaceResult")
+    suspend fun setFaceResult(@Body request: SetFaceResultRequest): Response<BaseResponse<Unit>>
 
 }
 
-//const val BASE_URL = "http://192.168.88.193:8888"
-const val BASE_URL = "http://localhost:8888"
+const val BASE_URL = "http://192.168.31.166:8181"
+//const val BASE_URL = "http://localhost:8888"

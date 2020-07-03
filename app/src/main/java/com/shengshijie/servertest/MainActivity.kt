@@ -1,18 +1,13 @@
 package com.shengshijie.servertest
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.shengshijie.dialog.external.InputDialog
 import com.shengshijie.log.HLog
-import com.shengshijie.log.LogbackImpl
-import com.shengshijie.server.ServerManager
-import com.shengshijie.server.http.config.ServerConfig
-import com.shengshijie.server.log.LogLevel
-import com.shengshijie.server.platform.android.AndroidServer
 import com.shengshijie.servertest.api.State
-import com.shengshijie.servertest.java.TestActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -21,16 +16,11 @@ class MainActivity : AppCompatActivity() {
 
     private val mainViewModel: MainViewModel = MainViewModel()
 
+    private var orderNumber: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        HLog.setLogImpl(LogbackImpl().apply {
-            file = false
-            db = false
-            socket = false
-            socketHost = "192.168.88.191"
-            socketPort = 4569
-        })
         HLog.init(application, application.getExternalFilesDir(null)?.absolutePath, "RFT")
 //        findViewById<View>(R.id.ll_content).scaleY = -1F
         mainViewModel.initResponseLiveData.observe(this, Observer { state ->
@@ -39,10 +29,10 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = state.data.toString()
+                    tv_log.text = "初始化成功"
                 }
                 is State.Error -> {
-                    tv_log.text = state.message
+                    tv_log.text = "初始化失败:${state.message}"
                 }
             }
         })
@@ -52,10 +42,11 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = state.data.toString()
+                    tv_log.text = "设置金额成功"
+                    orderNumber = state.data.data?.orderNumber ?: ""
                 }
                 is State.Error -> {
-                    tv_log.text = state.message
+                    tv_log.text = "设置金额失败:${state.message}"
                 }
             }
         })
@@ -65,10 +56,36 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = state.data.toString()
+                    tv_log.text = "交易成功:${state.data.data.toString()}"
                 }
                 is State.Error -> {
-                    tv_log.text = state.message
+                    tv_log.text = "交易失败:${state.message}"
+                }
+            }
+        })
+        mainViewModel.changeAmountResponseLiveData.observe(this, Observer { state ->
+            when (state) {
+                is State.Loading -> {
+                    tv_log.text = "Loading"
+                }
+                is State.Success -> {
+                    tv_log.text = "修改金额成功"
+                }
+                is State.Error -> {
+                    tv_log.text = "修改金额失败:${state.message}"
+                }
+            }
+        })
+        mainViewModel.setFaceResultResponseLiveData.observe(this, Observer { state ->
+            when (state) {
+                is State.Loading -> {
+                    tv_log.text = "Loading"
+                }
+                is State.Success -> {
+                    tv_log.text = "设置人脸信息成功"
+                }
+                is State.Error -> {
+                    tv_log.text = "设置人脸信息失败:${state.message}"
                 }
             }
         })
@@ -78,10 +95,10 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = state.data.toString()
+                    tv_log.text = "交易成功:${state.data.data.toString()}"
                 }
                 is State.Error -> {
-                    tv_log.text = state.message
+                    tv_log.text = "交易失败:${state.message}"
                 }
             }
         })
@@ -91,10 +108,10 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = state.data.toString()
+                    tv_log.text = "取消交易成功"
                 }
                 is State.Error -> {
-                    tv_log.text = state.message
+                    tv_log.text = "取消交易失败:${state.message}"
                 }
             }
         })
@@ -104,44 +121,104 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = state.data.toString()
+                    tv_log.text = "销毁交易成功"
                 }
                 is State.Error -> {
-                    tv_log.text = state.message
+                    tv_log.text = "销毁交易失败:${state.message}"
                 }
             }
         })
-        findViewById<View>(R.id.startServer).setOnClickListener {
-            ServerManager.start(ServerConfig.Builder()
-                    .setServer(AndroidServer(this@MainActivity))
-                    .setPort(8888)
-                    .setDebug(true)
-                    .setEnableSSL(false)
-                    .setEnableCors(true)
-                    .setSign(false)
-                    .setRootPath("/api")
-                    .setLog { level, content -> HLog.log(level.toAndroidLogLevel(), content) }
-                    .setLogLevel(LogLevel.INFO)
-                    .setPackageNameList(arrayListOf("com.shengshijie.servertest.controller"))
-                    .build())
-        }
-        findViewById<View>(R.id.stopServer).setOnClickListener {
-            ServerManager.stop()
-        }
-        findViewById<View>(R.id.get2).setOnClickListener {
-            mainViewModel.get2()
-        }
-        findViewById<View>(R.id.get1).setOnClickListener {
-            mainViewModel.get1(1.00)
-        }
-        findViewById<View>(R.id.post2).setOnClickListener {
-            mainViewModel.post2()
-        }
-        findViewById<View>(R.id.post1).setOnClickListener {
-            mainViewModel.post1("西西", "10", "1.00")
-        }
-        findViewById<View>(R.id.java).setOnClickListener {
-            startActivity(Intent(this, TestActivity::class.java))
-        }
+//        findViewById<View>(R.id.startServer).setOnClickListener {
+//            ServerManager.start(ServerConfig.Builder()
+//                    .setServer(AndroidServer(this@MainActivity))
+//                    .setPort(8888)
+//                    .setDebug(true)
+//                    .setEnableSSL(false)
+//                    .setEnableCors(true)
+//                    .setSign(false)
+//                    .setRootPath("/api")
+//                    .setLog { level, content -> HLog.log(level.toAndroidLogLevel(), content) }
+//                    .setLogLevel(LogLevel.INFO)
+//                    .setPackageNameList(arrayListOf("com.shengshijie.servertest.controller"))
+//                    .build())
+//        }
+//        findViewById<View>(R.id.stopServer).setOnClickListener {
+//            ServerManager.stop()
+//        }
+
     }
+
+    fun init(view: View) {
+        mainViewModel.init()
+    }
+
+    fun setAmount(view: View) {
+        InputDialog.Builder(this)
+                .setTitle("请输入支付金额")
+                .setMessage("")
+                .setInput("")
+                .setOnClickPositive { dialog, text ->
+                    if (text == null || text.isEmpty()) {
+                        Toast.makeText(this, "请输入支付金额", Toast.LENGTH_SHORT).show()
+                        return@setOnClickPositive
+                    }
+                    mainViewModel.setAmount(text)
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+    }
+
+    fun start(view: View) {
+        mainViewModel.start(orderNumber)
+    }
+
+    fun setFaceResult(view: View) {
+        mainViewModel.setFaceResult("左烨季","1801562")
+    }
+
+    fun verifyPassword(view: View) {
+        InputDialog.Builder(this)
+                .setTitle("请输入支付密码")
+                .setMessage("")
+                .setInput("")
+                .setOnClickPositive { dialog, text ->
+                    if (text == null || text.isEmpty()) {
+                        Toast.makeText(this, "请输入支付密码", Toast.LENGTH_SHORT).show()
+                        return@setOnClickPositive
+                    }
+                    mainViewModel.verifyPassword(text)
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+    }
+
+    fun cancel(view: View) {
+        mainViewModel.cancel()
+    }
+
+    fun destroy(view: View) {
+        mainViewModel.destroy()
+    }
+
+    fun ip(view: View) {
+        InputDialog.Builder(this)
+                .setTitle("请输入POS终端IP")
+                .setMessage("***.***.***.***")
+                .setInput("192.168.31.166")
+                .setOnClickPositive { dialog, text ->
+                    if (text != null) {
+                        SPHelper.ip = "http://$text:8181"
+                        dialog.dismiss()
+                    }
+                }
+                .create()
+                .show()
+    }
+
+    fun changeAmount(view: View) {
+        mainViewModel.changeAmount("10.00")
+    }
+
 }

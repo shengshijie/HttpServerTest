@@ -2,6 +2,7 @@ package com.shengshijie.servertest.api
 
 import com.google.gson.GsonBuilder
 import com.shengshijie.log.HLog
+import com.shengshijie.servertest.SPHelper
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,9 +13,9 @@ import javax.net.ssl.X509TrustManager
 
 object RetrofitClient {
 
-    fun getService(): TestService = Retrofit.Builder()
+    fun getService(): ApiService = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
-            .baseUrl(TEST_BASE_URL)
+            .baseUrl(SPHelper.ip)
             .client(OkHttpClient
                     .Builder()
                     .readTimeout(24L, TimeUnit.HOURS)
@@ -42,6 +43,6 @@ object RetrofitClient {
                     .build()
             )
             .build()
-            .create(TestService::class.java)
+            .create(ApiService::class.java)
 
 }

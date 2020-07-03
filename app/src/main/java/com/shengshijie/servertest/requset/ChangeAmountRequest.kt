@@ -1,6 +1,6 @@
 package com.shengshijie.servertest.requset
 
-class SetAmountRequest : BaseRequest() {
+class ChangeAmountRequest : BaseRequest() {
 
     var amount = "0.00"
 

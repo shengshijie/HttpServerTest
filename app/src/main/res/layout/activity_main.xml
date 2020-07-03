@@ -13,47 +13,70 @@
         android:layout_height="wrap_content"
         android:padding="10dp" />
 
-    <Button
-        android:id="@+id/startServer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="start server" />
+    <!--    <Button-->
+    <!--        android:id="@+id/startServer"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="start server" />-->
+
+    <!--    <Button-->
+    <!--        android:id="@+id/stopServer"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="stop server" />-->
 
     <Button
-        android:id="@+id/stopServer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="stop server" />
-
-
-    <Button
-        android:id="@+id/get1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="GET1" />
+        android:onClick="ip"
+        android:text="IP设置" />
 
     <Button
-        android:id="@+id/get2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="GET2" />
+        android:onClick="init"
+        android:text="初始化支付" />
 
     <Button
-        android:id="@+id/post1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="POST1" />
+        android:onClick="setAmount"
+        android:text="设置金额" />
 
     <Button
-        android:id="@+id/post2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="POST2" />
+        android:onClick="start"
+        android:text="开始支付" />
 
     <Button
-        android:id="@+id/java"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="java" />
+        android:onClick="changeAmount"
+        android:text="修改金额" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="setFaceResult"
+        android:text="设置人脸信息" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="verifyPassword"
+        android:text="验证支付密码" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="cancel"
+        android:text="取消支付" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="destroy"
+        android:text="销毁支付" />
 
 </LinearLayout>

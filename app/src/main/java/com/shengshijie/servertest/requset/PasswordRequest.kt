@@ -1,6 +1,6 @@
 package com.shengshijie.servertest.requset
 
-class PasswordRequest {
+class PasswordRequest : BaseRequest() {
 
     var password = ""
 

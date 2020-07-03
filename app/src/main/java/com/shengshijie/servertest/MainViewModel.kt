@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shengshijie.servertest.api.*
+import com.shengshijie.servertest.response.BaseResponse
+import com.shengshijie.servertest.response.PayResultResponse
+import com.shengshijie.servertest.response.SetAmountResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -12,58 +15,99 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 class MainViewModel : ViewModel() {
 
-    private val _initResponseLiveData = MutableLiveData<State<BaseResponse>>()
-    val initResponseLiveData: LiveData<State<BaseResponse>>
+    private val _initResponseLiveData = MutableLiveData<State<BaseResponse<Unit>>>()
+    val initResponseLiveData: LiveData<State<BaseResponse<Unit>>>
         get() = _initResponseLiveData
 
-    private val _setAmountResponseLiveData = MutableLiveData<State<SetAmountResponse>>()
-    val setAmountResponseLiveData: LiveData<State<SetAmountResponse>>
+    private val _setAmountResponseLiveData = MutableLiveData<State<BaseResponse<SetAmountResponse>>>()
+    val setAmountResponseLiveData: LiveData<State<BaseResponse<SetAmountResponse>>>
         get() = _setAmountResponseLiveData
 
-    private val _startResponseLiveData = MutableLiveData<State<BaseResponse>>()
-    val startResponseLiveData: LiveData<State<BaseResponse>>
+    private val _startResponseLiveData = MutableLiveData<State<BaseResponse<PayResultResponse>>>()
+    val startResponseLiveData: LiveData<State<BaseResponse<PayResultResponse>>>
         get() = _startResponseLiveData
 
-    private val _verifyPasswordResponseLiveData = MutableLiveData<State<BaseResponse>>()
-    val verifyPasswordResponseLiveData: LiveData<State<BaseResponse>>
+    private val _changeAmountResponseLiveData = MutableLiveData<State<BaseResponse<Unit>>>()
+    val changeAmountResponseLiveData: LiveData<State<BaseResponse<Unit>>>
+        get() = _changeAmountResponseLiveData
+
+    private val _setFaceResultResponseLiveData = MutableLiveData<State<BaseResponse<Unit>>>()
+    val setFaceResultResponseLiveData: LiveData<State<BaseResponse<Unit>>>
+        get() = _setFaceResultResponseLiveData
+
+    private val _verifyPasswordResponseLiveData = MutableLiveData<State<BaseResponse<PayResultResponse>>>()
+    val verifyPasswordResponseLiveData: LiveData<State<BaseResponse<PayResultResponse>>>
         get() = _verifyPasswordResponseLiveData
 
-    private val _cancelResponseLiveData = MutableLiveData<State<BaseResponse>>()
-    val cancelResponseLiveData: LiveData<State<BaseResponse>>
+    private val _cancelResponseLiveData = MutableLiveData<State<BaseResponse<Unit>>>()
+    val cancelResponseLiveData: LiveData<State<BaseResponse<Unit>>>
         get() = _cancelResponseLiveData
 
-    private val _destroyResponseLiveData = MutableLiveData<State<BaseResponse>>()
-    val destroyResponseLiveData: LiveData<State<BaseResponse>>
+    private val _destroyResponseLiveData = MutableLiveData<State<BaseResponse<Unit>>>()
+    val destroyResponseLiveData: LiveData<State<BaseResponse<Unit>>>
         get() = _destroyResponseLiveData
 
-    fun get2() {
+    fun init() {
         viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).get2().collect {
+            DataRepository().init().collect {
                 _initResponseLiveData.value = it
             }
         }
     }
 
-    fun get1(amount: Double) {
+    fun setAmount(amount: String) {
         viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).get1(amount).collect {
+            DataRepository().setAmount(amount).collect {
                 _setAmountResponseLiveData.value = it
             }
         }
     }
 
-    fun post2() {
+    fun start(orderNumber: String) {
         viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).post2().collect {
+            DataRepository().start(orderNumber).collect {
                 _startResponseLiveData.value = it
             }
         }
     }
 
-    fun post1(name: String,age: String,amount: String) {
+    fun changeAmount(amount: String) {
         viewModelScope.launch {
-            DataRepository(RetrofitClient.getService()).post1(name, age, amount).collect {
+            DataRepository().changeAmount(amount).collect {
+                _changeAmountResponseLiveData.value = it
+            }
+        }
+    }
+
+
+    fun setFaceResult(userName:String,userNumber:String) {
+        viewModelScope.launch {
+            DataRepository().setFaceResult(userName,userNumber).collect {
+                _setFaceResultResponseLiveData.value = it
+            }
+        }
+    }
+
+    fun verifyPassword(password: String) {
+        viewModelScope.launch {
+            DataRepository().verifyPassword(password).collect {
                 _verifyPasswordResponseLiveData.value = it
+            }
+        }
+    }
+
+    fun cancel() {
+        viewModelScope.launch {
+            DataRepository().cancel().collect {
+                _cancelResponseLiveData.value = it
+            }
+        }
+    }
+
+    fun destroy() {
+        viewModelScope.launch {
+            DataRepository().destroy().collect {
+                _destroyResponseLiveData.value = it
             }
         }
     }
