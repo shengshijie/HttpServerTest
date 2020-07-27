@@ -10,6 +10,8 @@ import com.shengshijie.log.HLog
 import com.shengshijie.servertest.api.State
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.text.SimpleDateFormat
+import java.util.*
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
@@ -26,105 +28,105 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.initResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
-                    tv_log.text = "Loading"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "初始化成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 初始化成功"
                 }
                 is State.Error -> {
-                    tv_log.text = "初始化失败:${state.message}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 初始化失败:${state.message}"
                 }
             }
         })
         mainViewModel.setAmountResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
-                    tv_log.text = "Loading"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "设置金额成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 设置金额成功"
                     orderNumber = state.data.data?.orderNumber ?: ""
                 }
                 is State.Error -> {
-                    tv_log.text = "设置金额失败:${state.message}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 设置金额失败:${state.message}"
                 }
             }
         })
         mainViewModel.startResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
-                    tv_log.text = "Loading"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "交易成功:${state.data.data.toString()}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 交易成功:${state.data.data.toString()}"
                 }
                 is State.Error -> {
-                    tv_log.text = "交易失败:${state.message}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 交易失败:${state.message}"
                 }
             }
         })
         mainViewModel.changeAmountResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
-                    tv_log.text = "Loading"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "修改金额成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 修改金额成功"
                 }
                 is State.Error -> {
-                    tv_log.text = "修改金额失败:${state.message}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 修改金额失败:${state.message}"
                 }
             }
         })
         mainViewModel.setFaceResultResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
-                    tv_log.text = "Loading"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "设置人脸信息成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 设置人脸信息成功"
                 }
                 is State.Error -> {
-                    tv_log.text = "设置人脸信息失败:${state.message}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 设置人脸信息失败:${state.message}"
                 }
             }
         })
         mainViewModel.verifyPasswordResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
-                    tv_log.text = "Loading"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "交易成功:${state.data.data.toString()}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 交易成功:${state.data.data.toString()}"
                 }
                 is State.Error -> {
-                    tv_log.text = "交易失败:${state.message}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 交易失败:${state.message}"
                 }
             }
         })
         mainViewModel.cancelResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
-                    tv_log.text = "Loading"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "取消交易成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 取消交易成功"
                 }
                 is State.Error -> {
-                    tv_log.text = "取消交易失败:${state.message}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 取消交易失败:${state.message}"
                 }
             }
         })
         mainViewModel.destroyResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
-                    tv_log.text = "Loading"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "销毁交易成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 销毁交易成功"
                 }
                 is State.Error -> {
-                    tv_log.text = "销毁交易失败:${state.message}"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 销毁交易失败:${state.message}"
                 }
             }
         })
@@ -174,7 +176,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setFaceResult(view: View) {
-        mainViewModel.setFaceResult("左烨季","1801562")
+        mainViewModel.setFaceResult("左烨季", "1801562")
     }
 
     fun verifyPassword(view: View) {
@@ -206,10 +208,10 @@ class MainActivity : AppCompatActivity() {
         InputDialog.Builder(this)
                 .setTitle("请输入POS终端IP")
                 .setMessage("***.***.***.***")
-                .setInput("192.168.31.166")
+                .setInput(SPHelper.ip)
                 .setOnClickPositive { dialog, text ->
                     if (text != null) {
-                        SPHelper.ip = "http://$text:8181"
+                        SPHelper.ip = text
                         dialog.dismiss()
                     }
                 }

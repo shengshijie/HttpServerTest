@@ -15,7 +15,7 @@ object RetrofitClient {
 
     fun getService(): ApiService = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
-            .baseUrl(SPHelper.ip)
+            .baseUrl("http://${SPHelper.ip}:8181")
             .client(OkHttpClient
                     .Builder()
                     .readTimeout(24L, TimeUnit.HOURS)
