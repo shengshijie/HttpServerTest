@@ -152,13 +152,10 @@ class DataRepository {
                 sign.append(key).append("=").append(map[key]).append("&")
             }
         }
-        sign.deleteCharAt(sign.lastIndex)
         sign.append("59201CF6589202CB2CDAB26752472112")
         return ByteBufUtil.hexDump(
                 MessageDigest.getInstance("MD5").digest(sign.toString().toByteArray())
         ).toUpperCase(Locale.getDefault())
     }
-
-
 
 }
