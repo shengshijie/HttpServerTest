@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 初始化成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 初始化成功:${state.data.data.toString()}"
                 }
                 is State.Error -> {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 初始化失败:${state.message}"
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 设置金额成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 设置金额成功:${state.data.data.toString()}"
                     orderNumber = state.data.data?.orderNumber ?: ""
                 }
                 is State.Error -> {
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 修改金额成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 修改金额成功:${state.data.data.toString()}"
                 }
                 is State.Error -> {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 修改金额失败:${state.message}"
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 设置人脸信息成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 设置人脸信息成功:${state.data.data.toString()}"
                 }
                 is State.Error -> {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 设置人脸信息失败:${state.message}"
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 取消交易成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 取消交易成功:${state.data.data.toString()}"
                 }
                 is State.Error -> {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 取消交易失败:${state.message}"
@@ -123,10 +123,23 @@ class MainActivity : AppCompatActivity() {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
                 }
                 is State.Success -> {
-                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 销毁交易成功"
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 销毁交易成功:${state.data.data.toString()}"
                 }
                 is State.Error -> {
                     tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 销毁交易失败:${state.message}"
+                }
+            }
+        })
+        mainViewModel.orderResponseLiveData.observe(this, Observer { state ->
+            when (state) {
+                is State.Loading -> {
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
+                }
+                is State.Success -> {
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 查询交易成功:${state.data.data.toString()}"
+                }
+                is State.Error -> {
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 查询交易失败:${state.message}"
                 }
             }
         })
@@ -221,6 +234,10 @@ class MainActivity : AppCompatActivity() {
 
     fun changeAmount(view: View) {
         mainViewModel.changeAmount("10.00")
+    }
+
+    fun order(view: View) {
+        mainViewModel.order(null)
     }
 
 }

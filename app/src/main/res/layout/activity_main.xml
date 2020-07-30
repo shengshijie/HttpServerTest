@@ -79,4 +79,10 @@
         android:onClick="destroy"
         android:text="销毁支付" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="order"
+        android:text="查询订单" />
+
 </LinearLayout>

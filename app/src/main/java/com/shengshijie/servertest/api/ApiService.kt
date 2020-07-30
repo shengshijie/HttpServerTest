@@ -3,6 +3,7 @@ package com.shengshijie.servertest.api
 import com.shengshijie.servertest.requset.*
 import com.shengshijie.servertest.response.BaseResponse
 import com.shengshijie.servertest.response.PayResultResponse
+import com.shengshijie.servertest.response.QueryResponse
 import com.shengshijie.servertest.response.SetAmountResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -33,6 +34,9 @@ interface ApiService {
 
     @POST("api/media/setFaceResult")
     suspend fun setFaceResult(@Body request: SetFaceResultRequest): Response<BaseResponse<Unit>>
+
+    @POST("api/query/order")
+    suspend fun order(@Body request: QueryRequest): Response<BaseResponse<List<QueryResponse>>>
 
 }
 

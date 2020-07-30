@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.shengshijie.servertest.api.*
 import com.shengshijie.servertest.response.BaseResponse
 import com.shengshijie.servertest.response.PayResultResponse
+import com.shengshijie.servertest.response.QueryResponse
 import com.shengshijie.servertest.response.SetAmountResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -47,6 +48,10 @@ class MainViewModel : ViewModel() {
     val destroyResponseLiveData: LiveData<State<BaseResponse<Unit>>>
         get() = _destroyResponseLiveData
 
+    private val _orderResponseLiveData = MutableLiveData<State<BaseResponse<List<QueryResponse>>>>()
+    val orderResponseLiveData: LiveData<State<BaseResponse<List<QueryResponse>>>>
+        get() = _orderResponseLiveData
+
     fun init() {
         viewModelScope.launch {
             DataRepository().init().collect {
@@ -80,9 +85,9 @@ class MainViewModel : ViewModel() {
     }
 
 
-    fun setFaceResult(userName:String,userNumber:String) {
+    fun setFaceResult(userName: String, userNumber: String) {
         viewModelScope.launch {
-            DataRepository().setFaceResult(userName,userNumber).collect {
+            DataRepository().setFaceResult(userName, userNumber).collect {
                 _setFaceResultResponseLiveData.value = it
             }
         }
@@ -111,5 +116,14 @@ class MainViewModel : ViewModel() {
             }
         }
     }
+
+    fun order(orderNumber: String?) {
+        viewModelScope.launch {
+            DataRepository().order(orderNumber).collect {
+                _orderResponseLiveData.value = it
+            }
+        }
+    }
+
 
 }

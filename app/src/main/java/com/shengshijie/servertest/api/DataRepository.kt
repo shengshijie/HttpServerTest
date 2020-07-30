@@ -135,6 +135,18 @@ class DataRepository {
         })
     }
 
+    suspend fun order(orderNumber: String?) = createFlow {
+        RetrofitClient.getService().order(QueryRequest().apply {
+            this.orderNumber = orderNumber
+            this.nonce = UUID.randomUUID().toString()
+            this.timestamp = "${System.currentTimeMillis()}"
+            val gson = Gson()
+            var map: MutableMap<String, String?> = mutableMapOf()
+            map = gson.fromJson(gson.toJson(this), map.javaClass)
+            this.sign = getParamSign(map)
+        })
+    }
+
     private fun generateRequestBody(requestDataMap: Map<String, String>): HashMap<String, RequestBody> {
         val requestBodyMap: HashMap<String, RequestBody> = HashMap()
         requestDataMap.forEach {
