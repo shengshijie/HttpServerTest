@@ -36,7 +36,10 @@ interface ApiService {
     suspend fun setFaceResult(@Body request: SetFaceResultRequest): Response<BaseResponse<Unit>>
 
     @POST("api/query/order")
-    suspend fun order(@Body request: QueryRequest): Response<BaseResponse<List<QueryResponse>>>
+    suspend fun order(@Body request: QueryRequest): Response<BaseResponse<QueryResponse>>
+
+    @POST("api/pay/query")
+    suspend fun query(@Body request: QueryRequest): Response<BaseResponse<PayResultResponse>>
 
 }
 

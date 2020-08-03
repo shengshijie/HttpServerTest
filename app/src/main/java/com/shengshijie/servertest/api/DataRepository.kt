@@ -64,9 +64,10 @@ class DataRepository {
         })
     }
 
-    suspend fun start(orderNumber: String) = createFlow {
+    suspend fun start(orderNumber: String, instant: Boolean) = createFlow {
         RetrofitClient.getService().start(StartRequest().apply {
             this.orderNumber = orderNumber
+            this.instant = instant
             this.nonce = UUID.randomUUID().toString()
             this.timestamp = "${System.currentTimeMillis()}"
             val gson = Gson()
@@ -88,7 +89,7 @@ class DataRepository {
         })
     }
 
-    suspend fun setFaceResult(userName:String,userNumber:String) = createFlow {
+    suspend fun setFaceResult(userName: String, userNumber: String) = createFlow {
         RetrofitClient.getService().setFaceResult(SetFaceResultRequest().apply {
             this.userName = userName
             this.userNumber = userNumber
@@ -147,6 +148,18 @@ class DataRepository {
         })
     }
 
+    suspend fun query(orderNumber: String?) = createFlow {
+        RetrofitClient.getService().query(QueryRequest().apply {
+            this.orderNumber = orderNumber
+            this.nonce = UUID.randomUUID().toString()
+            this.timestamp = "${System.currentTimeMillis()}"
+            val gson = Gson()
+            var map: MutableMap<String, String?> = mutableMapOf()
+            map = gson.fromJson(gson.toJson(this), map.javaClass)
+            this.sign = getParamSign(map)
+        })
+    }
+
     private fun generateRequestBody(requestDataMap: Map<String, String>): HashMap<String, RequestBody> {
         val requestBodyMap: HashMap<String, RequestBody> = HashMap()
         requestDataMap.forEach {
@@ -160,8 +173,8 @@ class DataRepository {
         keys.sortBy { it }
         val sign = StringBuilder()
         for (key in keys) {
-            if (map[key] != null && map[key] != "") {
-                sign.append(key).append("=").append(map[key]).append("&")
+            if (map[key] != null && "${map[key]}" != "") {
+                sign.append(key).append("=").append("${map[key]}").append("&")
             }
         }
         sign.append("59201CF6589202CB2CDAB26752472112")

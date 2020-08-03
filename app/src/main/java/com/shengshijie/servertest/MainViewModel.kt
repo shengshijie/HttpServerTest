@@ -48,9 +48,13 @@ class MainViewModel : ViewModel() {
     val destroyResponseLiveData: LiveData<State<BaseResponse<Unit>>>
         get() = _destroyResponseLiveData
 
-    private val _orderResponseLiveData = MutableLiveData<State<BaseResponse<List<QueryResponse>>>>()
-    val orderResponseLiveData: LiveData<State<BaseResponse<List<QueryResponse>>>>
+    private val _orderResponseLiveData = MutableLiveData<State<BaseResponse<QueryResponse>>>()
+    val orderResponseLiveData: LiveData<State<BaseResponse<QueryResponse>>>
         get() = _orderResponseLiveData
+
+    private val _queryResponseLiveData = MutableLiveData<State<BaseResponse<PayResultResponse>>>()
+    val queryResponseLiveData: LiveData<State<BaseResponse<PayResultResponse>>>
+        get() = _queryResponseLiveData
 
     fun init() {
         viewModelScope.launch {
@@ -68,9 +72,9 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun start(orderNumber: String) {
+    fun start(orderNumber: String,instant: Boolean) {
         viewModelScope.launch {
-            DataRepository().start(orderNumber).collect {
+            DataRepository().start(orderNumber,instant).collect {
                 _startResponseLiveData.value = it
             }
         }
@@ -121,6 +125,14 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             DataRepository().order(orderNumber).collect {
                 _orderResponseLiveData.value = it
+            }
+        }
+    }
+
+    fun query(orderNumber: String?) {
+        viewModelScope.launch {
+            DataRepository().query(orderNumber).collect {
+                _queryResponseLiveData.value = it
             }
         }
     }

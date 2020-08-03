@@ -143,6 +143,19 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+        mainViewModel.queryResponseLiveData.observe(this, Observer { state ->
+            when (state) {
+                is State.Loading -> {
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
+                }
+                is State.Success -> {
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 轮询交易成功:${state.data.data.toString()}"
+                }
+                is State.Error -> {
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 轮询交易失败:${state.message}"
+                }
+            }
+        })
 //        findViewById<View>(R.id.startServer).setOnClickListener {
 //            ServerManager.start(ServerConfig.Builder()
 //                    .setServer(AndroidServer(this@MainActivity))
@@ -185,7 +198,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun start(view: View) {
-        mainViewModel.start(orderNumber)
+        InputDialog.Builder(this)
+                .setTitle("请输入是否立即返回")
+                .setMessage("1：是，其他：否")
+                .setInput("")
+                .setOnClickPositive { dialog, text ->
+                    if (text == null || text.isEmpty()) {
+                        Toast.makeText(this, "请输入是否立即返回", Toast.LENGTH_SHORT).show()
+                        return@setOnClickPositive
+                    }
+                    mainViewModel.start(orderNumber, "1" == text)
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
     }
 
     fun setFaceResult(view: View) {
@@ -237,7 +263,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun order(view: View) {
-        mainViewModel.order(null)
+        mainViewModel.order(orderNumber)
+    }
+
+    fun query(view: View) {
+        mainViewModel.query(orderNumber)
     }
 
 }
