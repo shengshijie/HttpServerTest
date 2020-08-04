@@ -1,10 +1,7 @@
 package com.shengshijie.servertest.api
 
 import com.shengshijie.servertest.requset.*
-import com.shengshijie.servertest.response.BaseResponse
-import com.shengshijie.servertest.response.PayResultResponse
-import com.shengshijie.servertest.response.QueryResponse
-import com.shengshijie.servertest.response.SetAmountResponse
+import com.shengshijie.servertest.response.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -35,11 +32,14 @@ interface ApiService {
     @POST("api/media/setFaceResult")
     suspend fun setFaceResult(@Body request: SetFaceResultRequest): Response<BaseResponse<Unit>>
 
-    @POST("api/query/order")
+    @POST("api/order/list")
     suspend fun order(@Body request: QueryRequest): Response<BaseResponse<QueryResponse>>
 
     @POST("api/pay/query")
     suspend fun query(@Body request: QueryRequest): Response<BaseResponse<PayResultResponse>>
+
+    @POST("api/person/detail")
+    suspend fun detail(@Body request: BaseRequest): Response<BaseResponse<PersonResponse>>
 
 }
 

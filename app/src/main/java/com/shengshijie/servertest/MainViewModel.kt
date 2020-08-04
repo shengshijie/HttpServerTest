@@ -5,10 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shengshijie.servertest.api.*
-import com.shengshijie.servertest.response.BaseResponse
-import com.shengshijie.servertest.response.PayResultResponse
-import com.shengshijie.servertest.response.QueryResponse
-import com.shengshijie.servertest.response.SetAmountResponse
+import com.shengshijie.servertest.response.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -55,6 +52,10 @@ class MainViewModel : ViewModel() {
     private val _queryResponseLiveData = MutableLiveData<State<BaseResponse<PayResultResponse>>>()
     val queryResponseLiveData: LiveData<State<BaseResponse<PayResultResponse>>>
         get() = _queryResponseLiveData
+
+    private val _detailResponseLiveData = MutableLiveData<State<BaseResponse<PersonResponse>>>()
+    val detailResponseLiveData: LiveData<State<BaseResponse<PersonResponse>>>
+        get() = _detailResponseLiveData
 
     fun init() {
         viewModelScope.launch {
@@ -137,5 +138,12 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun detail() {
+        viewModelScope.launch {
+            DataRepository().detail().collect {
+                _detailResponseLiveData.value = it
+            }
+        }
+    }
 
 }

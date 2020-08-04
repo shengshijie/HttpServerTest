@@ -156,6 +156,19 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+        mainViewModel.detailResponseLiveData.observe(this, Observer { state ->
+            when (state) {
+                is State.Loading -> {
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} Loading"
+                }
+                is State.Success -> {
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 查询个人信息成功:${state.data.data.toString()}"
+                }
+                is State.Error -> {
+                    tv_log.text = "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())} 查询个人信息失败:${state.message}"
+                }
+            }
+        })
 //        findViewById<View>(R.id.startServer).setOnClickListener {
 //            ServerManager.start(ServerConfig.Builder()
 //                    .setServer(AndroidServer(this@MainActivity))
@@ -268,6 +281,10 @@ class MainActivity : AppCompatActivity() {
 
     fun query(view: View) {
         mainViewModel.query(orderNumber)
+    }
+
+    fun detail(view: View) {
+        mainViewModel.detail()
     }
 
 }

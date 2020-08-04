@@ -91,4 +91,10 @@
         android:onClick="query"
         android:text="轮询" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="detail"
+        android:text="查询个人信息" />
+
 </LinearLayout>
