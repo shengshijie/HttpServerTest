@@ -1,9 +1,10 @@
 package com.shengshijie.servertest.requset
 
+import java.util.*
+
 open class BaseRequest {
 
-    var nonce = ""
-    var timestamp = ""
-    var sign = ""
+    var nonce = UUID.randomUUID().toString()
+    var timestamp = "${System.currentTimeMillis()}"
 
 }

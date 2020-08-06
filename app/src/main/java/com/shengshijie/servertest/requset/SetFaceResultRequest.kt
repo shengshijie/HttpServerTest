@@ -1,8 +1,8 @@
 package com.shengshijie.servertest.requset
 
-class SetFaceResultRequest : BaseRequest() {
+import com.shengshijie.servertest.util.getParamSign
 
-    var userName =""
-    var userNumber =""
-
+data class SetFaceResultRequest(var faceBase64: String, var userName: String, var userNumber: String, var similarity: String, var threshold: String, var captureTime: String) : BaseRequest() {
+    var sign = getParamSign(this)
 }
+

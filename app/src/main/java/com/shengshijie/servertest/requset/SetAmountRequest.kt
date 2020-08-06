@@ -1,7 +1,7 @@
 package com.shengshijie.servertest.requset
 
-class SetAmountRequest : BaseRequest() {
+import com.shengshijie.servertest.util.getParamSign
 
-    var amount = "0.00"
-
+data class SetAmountRequest(var amount: String) : BaseRequest() {
+    var sign = getParamSign(this)
 }

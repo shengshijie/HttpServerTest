@@ -1,7 +1,7 @@
 package com.shengshijie.servertest.requset
 
-class QueryRequest : BaseRequest() {
+import com.shengshijie.servertest.util.getParamSign
 
-    var orderNumber:String? = null
-
+data class QueryRequest(var orderNumber: String?) : BaseRequest(){
+    var sign = getParamSign(this)
 }

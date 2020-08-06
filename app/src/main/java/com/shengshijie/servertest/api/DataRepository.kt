@@ -1,197 +1,163 @@
 package com.shengshijie.servertest.api
 
-import com.google.gson.Gson
+import android.util.Log
 import com.shengshijie.log.HLog
+import com.shengshijie.servertest.ResponseUtils
 import com.shengshijie.servertest.requset.*
-import com.shengshijie.servertest.response.BaseResponse
-import io.netty.buffer.ByteBufUtil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.Response
-import java.security.MessageDigest
-import java.util.*
-import kotlin.collections.HashMap
+import java.io.IOException
 
-@ExperimentalCoroutinesApi
-class DataRepository {
+object DataRepository {
 
-    private suspend inline fun <T : BaseResponse<*>> createFlow(crossinline request: suspend () -> Response<T>): Flow<State<T>> {
-        return flow {
-            val response = request()
-            emit(State.loading<T>())
-            if (response.isSuccessful && response.body() != null) {
-                if (response.body()!!.code == 1000) {
-                    emit(State.success(response.body() as T))
-                } else {
-                    emit(State.error(response.body()!!.message))
-                }
+    suspend fun init() = ResponseUtils.createFlow {
+        RetrofitClient.getService().init(EmptyRequest())
+    }
+
+    suspend fun setAmount(amount: String) = ResponseUtils.createFlow {
+        RetrofitClient.getService().setAmount(SetAmountRequest(amount))
+    }
+
+    suspend fun start(orderNumber: String, instant: Boolean) = ResponseUtils.createFlow {
+        RetrofitClient.getService().start(StartRequest(orderNumber, instant))
+    }
+
+    suspend fun changeAmount(amount: String) = ResponseUtils.createFlow {
+        RetrofitClient.getService().changeAmount(ChangeAmountRequest(amount))
+    }
+
+    suspend fun setFaceResult(faceBase64: String, userName: String, userNumber: String, similarity: String, threshold: String, captureTime: String) = ResponseUtils.createFlow {
+        RetrofitClient.getService().setFaceResult(SetFaceResultRequest(faceBase64, userName, userNumber, similarity, threshold, captureTime))
+    }
+
+    suspend fun verifyPassword(password: String) = ResponseUtils.createFlow {
+        RetrofitClient.getService().verifyPassword(PasswordRequest(password))
+    }
+
+    suspend fun cancel() = ResponseUtils.createFlow {
+        RetrofitClient.getService().cancel(EmptyRequest())
+    }
+
+    suspend fun destroy() = ResponseUtils.createFlow {
+        RetrofitClient.getService().destroy(EmptyRequest())
+    }
+
+    suspend fun order(orderNumber: String?) = ResponseUtils.createFlow {
+        RetrofitClient.getService().order(QueryRequest(orderNumber))
+    }
+
+    suspend fun query(orderNumber: String?) = ResponseUtils.createFlow {
+        RetrofitClient.getService().query(QueryRequest(orderNumber))
+    }
+
+    suspend fun detail() = ResponseUtils.createFlow {
+        RetrofitClient.getService().detail(EmptyRequest())
+    }
+
+    suspend fun test1() {
+        var count = 0
+        var success = 0
+        var error = 0
+        repeat(10) {
+            count++
+            val init = RetrofitClient.getService().init(EmptyRequest())
+            if (init.code != 1000 && init.message != "请勿重复初始化") {
+                println("init:${init.message}")
+            }
+            val amount = RetrofitClient.getService().setAmount(SetAmountRequest("1.00"))
+            if (init.code != 1000) {
+                println("amount:${amount.message}")
+            }
+            val start = RetrofitClient.getService().start(StartRequest(amount.data?.orderNumber ?: "", false))
+            if (start.code != 1000) {
+                error++
+                println("start:${start.message}")
             } else {
-                emit(State.error(response.message()))
+                success++
             }
-        }.flowOn(Dispatchers.IO)
-                .catch {
-                    HLog.e(it)
-                    emit(State.error("Network error:" + it.message))
+            val order = RetrofitClient.getService().order(QueryRequest(amount.data?.orderNumber ?: ""))
+            if (order.code != 1000) {
+                println("order:${order.message}")
+            }
+            val cancel = RetrofitClient.getService().cancel(EmptyRequest())
+            if (cancel.code != 1000) {
+                println("cancel:${cancel.message}")
+            }
+            delay(1000)
+            Log.e("EEE", "TOTAL:$count | SUCCESS:$success | ERROR:$error")
+        }
+    }
+
+    suspend fun test2() {
+        var count = 0
+        var success = 0
+        var error = 0
+        var retry = 0
+        repeat(10) {
+            count++
+            val init = RetrofitClient.getService().init(EmptyRequest())
+            if (init.code != 1000 && init.message != "请勿重复初始化") {
+                println("init:${init.message}")
+            }
+            val amount = RetrofitClient.getService().setAmount(SetAmountRequest("1.00"))
+            if (init.code != 1000) {
+                println("amount:${amount.message}")
+            }
+            val start = RetrofitClient.getService().start(StartRequest(amount.data?.orderNumber ?: "", true))
+            if (start.code != 1000) {
+                println("start:${start.message}")
+            }
+            do {
+                if (retry > 5) {
+                    error++
+                    break
                 }
-    }
-
-    suspend fun init() = createFlow {
-        RetrofitClient.getService().init(BaseRequest().apply {
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun setAmount(amount: String) = createFlow {
-        RetrofitClient.getService().setAmount(SetAmountRequest().apply {
-            this.amount = amount
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun start(orderNumber: String, instant: Boolean) = createFlow {
-        RetrofitClient.getService().start(StartRequest().apply {
-            this.orderNumber = orderNumber
-            this.instant = instant
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun changeAmount(amount: String) = createFlow {
-        RetrofitClient.getService().changeAmount(ChangeAmountRequest().apply {
-            this.amount = amount
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun setFaceResult(userName: String, userNumber: String) = createFlow {
-        RetrofitClient.getService().setFaceResult(SetFaceResultRequest().apply {
-            this.userName = userName
-            this.userNumber = userNumber
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun verifyPassword(password: String) = createFlow {
-        RetrofitClient.getService().verifyPassword(PasswordRequest().apply {
-            this.password = password
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun cancel() = createFlow {
-        RetrofitClient.getService().cancel(BaseRequest().apply {
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun destroy() = createFlow {
-        RetrofitClient.getService().destroy(BaseRequest().apply {
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun order(orderNumber: String?) = createFlow {
-        RetrofitClient.getService().order(QueryRequest().apply {
-            this.orderNumber = orderNumber
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun query(orderNumber: String?) = createFlow {
-        RetrofitClient.getService().query(QueryRequest().apply {
-            this.orderNumber = orderNumber
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    suspend fun detail() = createFlow {
-        RetrofitClient.getService().detail(BaseRequest().apply {
-            this.nonce = UUID.randomUUID().toString()
-            this.timestamp = "${System.currentTimeMillis()}"
-            val gson = Gson()
-            var map: MutableMap<String, String?> = mutableMapOf()
-            map = gson.fromJson(gson.toJson(this), map.javaClass)
-            this.sign = getParamSign(map)
-        })
-    }
-
-    private fun generateRequestBody(requestDataMap: Map<String, String>): HashMap<String, RequestBody> {
-        val requestBodyMap: HashMap<String, RequestBody> = HashMap()
-        requestDataMap.forEach {
-            requestBodyMap[it.key] = it.value.toRequestBody()
-        }
-        return requestBodyMap
-    }
-
-    private fun getParamSign(map: MutableMap<String, String?>): String {
-        val keys = map.keys.toMutableList()
-        keys.sortBy { it }
-        val sign = StringBuilder()
-        for (key in keys) {
-            if (map[key] != null && "${map[key]}" != "") {
-                sign.append(key).append("=").append("${map[key]}").append("&")
+                val order = RetrofitClient.getService().query(QueryRequest(amount.data?.orderNumber ?: ""))
+                retry++
+                delay(1000)
+                if (order.code == 1000) {
+                    success++
+                }
+            } while (order.code == 1000)
+            val cancel = RetrofitClient.getService().cancel(EmptyRequest())
+            if (cancel.code != 1000) {
+                println("cancel:${cancel.message}")
             }
+            delay(1000)
+            Log.e("EEE", "TOTAL:$count | SUCCESS:$success | ERROR:$error")
         }
-        sign.append("59201CF6589202CB2CDAB26752472112")
-        return ByteBufUtil.hexDump(
-                MessageDigest.getInstance("MD5").digest(sign.toString().toByteArray())
-        ).toUpperCase(Locale.getDefault())
     }
+
+    suspend fun test() = flow { emit(RetrofitClient.getService().init(EmptyRequest())) }
+            .flatMapConcat {
+                if (it.code == 1000) {
+                    flow { emit(RetrofitClient.getService().setAmount(SetAmountRequest("1.00"))) }
+                } else {
+                    throw RuntimeException(it.message)
+                }
+            }
+            .flatMapConcat {
+                if (it.code == 1000) {
+                    flow { emit(RetrofitClient.getService().start(StartRequest(it.data?.orderNumber ?: "", true))) }
+                } else {
+                    throw RuntimeException(it.message)
+                }
+            }
+            .flatMapConcat {
+                flow { emit(RetrofitClient.getService().query(QueryRequest(it.data?.orderNumber ?: ""))) }
+                        .retry(retries = 3) { cause ->
+                            if (cause is IOException) {
+                                delay(1000)
+                                return@retry true
+                            } else {
+                                return@retry false
+                            }
+                        }.catch {
+                            throw RuntimeException(it.message)
+                        }
+            }
 
 }
+

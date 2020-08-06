@@ -1,8 +1,8 @@
 package com.shengshijie.servertest.requset
 
-class StartRequest : BaseRequest() {
+import com.shengshijie.servertest.util.getParamSign
 
-    var orderNumber = ""
-    var instant = false
-
+data class StartRequest(var orderNumber: String, var instant: Boolean) : BaseRequest() {
+    var sign = getParamSign(this)
 }
+

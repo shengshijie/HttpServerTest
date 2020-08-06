@@ -1,7 +1,9 @@
 package com.shengshijie.servertest.requset
 
-class PasswordRequest : BaseRequest() {
+import com.shengshijie.servertest.util.getParamSign
 
-    var password = ""
-
+data class PasswordRequest(var password: String) : BaseRequest(){
+    var sign = getParamSign(this)
 }
+
+
