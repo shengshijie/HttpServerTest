@@ -85,6 +85,10 @@ object DataRepository {
             if (cancel.code != 1000) {
                 println("cancel:${cancel.message}")
             }
+            val detail = RetrofitClient.getService().detail(EmptyRequest())
+            if (detail.code != 1000) {
+                println("detail:${detail.message}")
+            }
             delay(1000)
             Log.e("EEE", "TOTAL:$count | SUCCESS:$success | ERROR:$error")
         }
@@ -94,7 +98,6 @@ object DataRepository {
         var count = 0
         var success = 0
         var error = 0
-        var retry = 0
         repeat(10) {
             count++
             val init = RetrofitClient.getService().init(EmptyRequest())
@@ -109,21 +112,21 @@ object DataRepository {
             if (start.code != 1000) {
                 println("start:${start.message}")
             }
+            var startSuccess = false
+            var retry = 0
             do {
                 if (retry > 5) {
-                    error++
                     break
                 }
                 val order = RetrofitClient.getService().query(QueryRequest(amount.data?.orderNumber ?: ""))
                 retry++
                 delay(1000)
-                if (order.code == 1000) {
-                    success++
-                }
-            } while (order.code == 1000)
-            val cancel = RetrofitClient.getService().cancel(EmptyRequest())
-            if (cancel.code != 1000) {
-                println("cancel:${cancel.message}")
+                startSuccess = order.code == 1000
+            } while (!startSuccess)
+            if (startSuccess) {
+                success++
+            } else {
+                error++
             }
             delay(1000)
             Log.e("EEE", "TOTAL:$count | SUCCESS:$success | ERROR:$error")

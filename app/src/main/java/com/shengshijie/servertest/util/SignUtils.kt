@@ -6,8 +6,7 @@ import java.security.MessageDigest
 import java.util.*
 
 fun getParamSign(any: Any): String {
-    var map: MutableMap<String, String?> = mutableMapOf()
-    map = GsonInstance.gson.fromJson(GsonInstance.gson.toJson(any), map.javaClass)
+    val map = GsonInstance.gson.fromJson(GsonInstance.gson.toJson(any), mutableMapOf<String, String?>().javaClass)
     val keys = map.keys.toMutableList()
     keys.sortBy { it }
     val sign = StringBuilder()
@@ -17,7 +16,5 @@ fun getParamSign(any: Any): String {
         }
     }
     sign.append("59201CF6589202CB2CDAB26752472112")
-    return ByteBufUtil.hexDump(
-            MessageDigest.getInstance("MD5").digest(sign.toString().toByteArray())
-    ).toUpperCase(Locale.getDefault())
+    return ByteBufUtil.hexDump(MessageDigest.getInstance("MD5").digest(sign.toString().toByteArray())).toUpperCase(Locale.ROOT)
 }
