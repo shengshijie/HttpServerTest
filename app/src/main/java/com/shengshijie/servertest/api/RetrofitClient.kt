@@ -19,13 +19,13 @@ object RetrofitClient {
             .client(OkHttpClient
                     .Builder()
                     .readTimeout(24L, TimeUnit.HOURS)
-                    .addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
-                        override fun log(message: String) {
-                            HLog.i(message)
-                        }
-                    }).apply {
-                        level = HttpLoggingInterceptor.Level.BODY
-                    })
+//                    .addInterceptor(HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
+//                        override fun log(message: String) {
+//                            HLog.i(message)
+//                        }
+//                    }).apply {
+//                        level = HttpLoggingInterceptor.Level.BODY
+//                    })
                     .sslSocketFactory(SSLFactory.getSSLSocketFactory(), object : X509TrustManager {
 
                         override fun checkClientTrusted(chain: Array<out java.security.cert.X509Certificate>?, authType: String?) {

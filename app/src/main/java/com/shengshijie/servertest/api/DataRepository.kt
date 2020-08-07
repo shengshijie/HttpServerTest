@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.*
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import kotlin.system.measureTimeMillis
 
 object DataRepository {
 
@@ -60,77 +61,82 @@ object DataRepository {
         var count = 0
         var success = 0
         var error = 0
-        repeat(10) {
+        var orderNumber = ""
+        repeat(200) {
+            HLog.e("EEE", "︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿")
             count++
-            val init = RetrofitClient.getService().init(EmptyRequest())
-            if (init.code != 1000 && init.message != "请勿重复初始化") {
-                println("init:${init.message}")
+            val initTime = measureTimeMillis {
+                val init = RetrofitClient.getService().init(EmptyRequest())
+                HLog.i("init:${init.code} ${init.message}")
             }
-            val amount = RetrofitClient.getService().setAmount(SetAmountRequest("1.00"))
-            if (init.code != 1000) {
-                println("amount:${amount.message}")
+            val amountTime = measureTimeMillis {
+                val amount = RetrofitClient.getService().setAmount(SetAmountRequest("0.01"))
+                orderNumber = amount.data?.orderNumber ?: ""
+                HLog.i("amount:${amount.code} ${amount.message}")
             }
-            val start = RetrofitClient.getService().start(StartRequest(amount.data?.orderNumber ?: "", false))
-            if (start.code != 1000) {
-                error++
-                println("start:${start.message}")
-            } else {
-                success++
+            val startTime = measureTimeMillis {
+                val start = RetrofitClient.getService().start(StartRequest(orderNumber, false))
+                HLog.i("start:${start.code} ${start.message}")
+                if (start.code != 1000) {
+                    error++
+                } else {
+                    success++
+                }
             }
-            val order = RetrofitClient.getService().order(QueryRequest(amount.data?.orderNumber ?: ""))
-            if (order.code != 1000) {
-                println("order:${order.message}")
-            }
-            val cancel = RetrofitClient.getService().cancel(EmptyRequest())
-            if (cancel.code != 1000) {
-                println("cancel:${cancel.message}")
+            val orderTime = measureTimeMillis {
+                val order = RetrofitClient.getService().order(QueryRequest(orderNumber))
+                HLog.i("order:${order.code} ${order.message}")
             }
             val detail = RetrofitClient.getService().detail(EmptyRequest())
-            if (detail.code != 1000) {
-                println("detail:${detail.message}")
-            }
-            delay(1000)
-            Log.e("EEE", "TOTAL:$count | SUCCESS:$success | ERROR:$error")
+            HLog.i("detail:${detail.code} ${detail.message}")
+            HLog.e("EEE", "initTime:$initTime | amountTime:$amountTime | startTime:$startTime  | orderTime:$orderTime")
+            HLog.e("EEE", "﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀  TOTAL:$count | SUCCESS:$success | ERROR:$error")
         }
+        HLog.e("EEE", "TOTAL:$count | SUCCESS:$success | ERROR:$error")
     }
 
     suspend fun test2() {
         var count = 0
         var success = 0
         var error = 0
+        var orderNumber = ""
         repeat(10) {
+            HLog.e("EEE", "︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿")
             count++
-            val init = RetrofitClient.getService().init(EmptyRequest())
-            if (init.code != 1000 && init.message != "请勿重复初始化") {
-                println("init:${init.message}")
+            val initTime = measureTimeMillis {
+                val init = RetrofitClient.getService().init(EmptyRequest())
+                HLog.i("init:${init.code} ${init.message}")
             }
-            val amount = RetrofitClient.getService().setAmount(SetAmountRequest("1.00"))
-            if (init.code != 1000) {
-                println("amount:${amount.message}")
+            val amountTime = measureTimeMillis {
+                val amount = RetrofitClient.getService().setAmount(SetAmountRequest("0.01"))
+                orderNumber = amount.data?.orderNumber ?: ""
+                HLog.i("amount:${amount.code} ${amount.message}")
             }
-            val start = RetrofitClient.getService().start(StartRequest(amount.data?.orderNumber ?: "", true))
-            if (start.code != 1000) {
-                println("start:${start.message}")
-            }
-            var startSuccess = false
-            var retry = 0
-            do {
-                if (retry > 5) {
-                    break
+            val startTime = measureTimeMillis {
+                val start = RetrofitClient.getService().start(StartRequest(orderNumber, true))
+                HLog.i("start:${start.code} ${start.message}")
+                var startSuccess = false
+                var retry = 0
+                do {
+                    if (retry > 5) {
+                        break
+                    }
+                    val order = RetrofitClient.getService().query(QueryRequest(orderNumber))
+                    HLog.i("order:${order.code} ${order.message}")
+                    retry++
+                    delay(500)
+                    startSuccess = order.code == 1000
+                } while (!startSuccess)
+                if (startSuccess) {
+                    success++
+                } else {
+                    error++
                 }
-                val order = RetrofitClient.getService().query(QueryRequest(amount.data?.orderNumber ?: ""))
-                retry++
-                delay(1000)
-                startSuccess = order.code == 1000
-            } while (!startSuccess)
-            if (startSuccess) {
-                success++
-            } else {
-                error++
             }
-            delay(1000)
-            Log.e("EEE", "TOTAL:$count | SUCCESS:$success | ERROR:$error")
+            HLog.e("EEE", "initTime:$initTime | amountTime:$amountTime | startTime:$startTime")
+            HLog.e("EEE", "﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀  TOTAL:$count | SUCCESS:$success | ERROR:$error")
         }
+        HLog.e("EEE", "TOTAL:$count | SUCCESS:$success | ERROR:$error")
     }
 
     suspend fun test() = flow { emit(RetrofitClient.getService().init(EmptyRequest())) }

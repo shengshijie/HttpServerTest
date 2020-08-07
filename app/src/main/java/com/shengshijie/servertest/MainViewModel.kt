@@ -139,13 +139,21 @@ class MainViewModel : ViewModel() {
 
     fun test1() {
         viewModelScope.launch {
-            DataRepository.test1()
+            try {
+                DataRepository.test1()
+            } catch (e: Exception) {
+                HLog.e(e,"test1:$e")
+            }
         }
     }
 
     fun test2() {
         viewModelScope.launch {
-            DataRepository.test2()
+            try {
+                DataRepository.test2()
+            } catch (e: Exception) {
+                HLog.e(e,"test2:$e")
+            }
         }
     }
 

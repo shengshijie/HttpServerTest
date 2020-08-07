@@ -1,22 +1,25 @@
 package com.shengshijie.servertest
 
+import android.Manifest
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import com.shengshijie.dialog.external.InputDialog
 import com.shengshijie.dialog.external.RadioDialog
 import com.shengshijie.log.HLog
 import com.shengshijie.servertest.api.State
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
+        EasyPermissions.RationaleCallbacks {
 
     private val mainViewModel: MainViewModel by viewModels()
 
@@ -25,7 +28,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        HLog.init(application, application.getExternalFilesDir(null)?.absolutePath, "RFT")
+        log()
+        HLog.init(application)
 //        findViewById<View>(R.id.ll_content).scaleY = -1F
         mainViewModel.initResponseLiveData.observe(this, Observer { state ->
             when (state) {
@@ -216,7 +220,7 @@ class MainActivity : AppCompatActivity() {
     fun start(view: View) {
         RadioDialog.Builder(this)
                 .setTitle("请输入是否立即返回")
-                .setItems(arrayOf("是","否"))
+                .setItems(arrayOf("是", "否"))
                 .setOnClickPositive { dialog, index ->
                     mainViewModel.start(orderNumber, 0 == index)
                     dialog.dismiss()
@@ -293,4 +297,53 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.test2()
     }
 
+    override fun onRequestPermissionsResult(
+            requestCode: Int,
+            permissions: Array<out String>,
+            grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(
+                requestCode,
+                permissions,
+                grantResults, this
+        )
+    }
+
+    override fun onDestroy() {
+        HLog.destroy()
+        super.onDestroy()
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+//
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            AppSettingsDialog.Builder(this).build().show()
+        }
+    }
+
+    override fun onRationaleDenied(requestCode: Int) {
+//
+    }
+
+    override fun onRationaleAccepted(requestCode: Int) {
+//
+    }
+
+    @AfterPermissionGranted(RC_STORAGE_PERM)
+    fun log() {
+        if (!EasyPermissions.hasPermissions(this, *EXTERNAL_STORAGE)) {
+            EasyPermissions.requestPermissions(this, "应用需要存储权限写入日志", RC_STORAGE_PERM, *EXTERNAL_STORAGE)
+        }
+    }
+
 }
+
+const val RC_STORAGE_PERM = 123
+val EXTERNAL_STORAGE = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+)
