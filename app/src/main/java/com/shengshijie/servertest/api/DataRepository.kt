@@ -1,13 +1,13 @@
 package com.shengshijie.servertest.api
 
-import android.util.Log
 import com.shengshijie.log.HLog
 import com.shengshijie.servertest.ResponseUtils
 import com.shengshijie.servertest.requset.*
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.retry
 import java.io.IOException
 import kotlin.system.measureTimeMillis
 
@@ -62,7 +62,7 @@ object DataRepository {
         var success = 0
         var error = 0
         var orderNumber = ""
-        repeat(200) {
+        repeat(500) {
             HLog.e("EEE", "︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿")
             count++
             val initTime = measureTimeMillis {
@@ -87,8 +87,6 @@ object DataRepository {
                 val order = RetrofitClient.getService().order(QueryRequest(orderNumber))
                 HLog.i("order:${order.code} ${order.message}")
             }
-            val detail = RetrofitClient.getService().detail(EmptyRequest())
-            HLog.i("detail:${detail.code} ${detail.message}")
             HLog.e("EEE", "initTime:$initTime | amountTime:$amountTime | startTime:$startTime  | orderTime:$orderTime")
             HLog.e("EEE", "﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀  TOTAL:$count | SUCCESS:$success | ERROR:$error")
         }
@@ -137,6 +135,13 @@ object DataRepository {
             HLog.e("EEE", "﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀  TOTAL:$count | SUCCESS:$success | ERROR:$error")
         }
         HLog.e("EEE", "TOTAL:$count | SUCCESS:$success | ERROR:$error")
+    }
+
+    suspend fun test3(faceBase64: String, userName: String, userNumber: String, similarity: String, threshold: String, captureTime: String) {
+        repeat(1000) {
+            RetrofitClient.getService().setFaceResult(SetFaceResultRequest(faceBase64, userName, userNumber, similarity, threshold, captureTime))
+            delay(1000)
+        }
     }
 
     suspend fun test() = flow { emit(RetrofitClient.getService().init(EmptyRequest())) }

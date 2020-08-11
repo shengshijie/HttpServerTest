@@ -157,4 +157,14 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun test3(faceBase64: String, userName: String, userNumber: String, similarity: String, threshold: String, captureTime: String) {
+        viewModelScope.launch {
+            try {
+                DataRepository.test3(faceBase64, userName, userNumber, similarity, threshold, captureTime)
+            } catch (e: Exception) {
+                HLog.e(e,"test3:$e")
+            }
+        }
+    }
+
 }
