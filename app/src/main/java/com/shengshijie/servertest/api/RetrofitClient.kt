@@ -1,10 +1,10 @@
 package com.shengshijie.servertest.api
 
 import com.google.gson.GsonBuilder
-import com.shengshijie.log.HLog
 import com.shengshijie.servertest.SPHelper
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -26,6 +26,15 @@ object RetrofitClient {
 //                    }).apply {
 //                        level = HttpLoggingInterceptor.Level.BODY
 //                    })
+                    .addInterceptor(object : Interceptor {
+                        override fun intercept(chain: Interceptor.Chain): Response {
+                            val request = chain.request()
+                                    .newBuilder()
+                                    .addHeader("Connection", "close")
+                                    .build()
+                            return chain.proceed(request);
+                        }
+                    })
                     .sslSocketFactory(SSLFactory.getSSLSocketFactory(), object : X509TrustManager {
 
                         override fun checkClientTrusted(chain: Array<out java.security.cert.X509Certificate>?, authType: String?) {

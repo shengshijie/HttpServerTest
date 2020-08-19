@@ -98,7 +98,7 @@ object DataRepository {
         var success = 0
         var error = 0
         var orderNumber = ""
-        repeat(10) {
+        repeat(500) {
             HLog.e("EEE", "︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿")
             count++
             val initTime = measureTimeMillis {
@@ -114,13 +114,17 @@ object DataRepository {
                 val start = RetrofitClient.getService().start(StartRequest(orderNumber, true))
                 HLog.i("start:${start.code} ${start.message}")
                 var startSuccess = false
+                val change = RetrofitClient.getService().changeAmount(ChangeAmountRequest("0.02"))
+                HLog.i("change:${change.code} ${change.message}")
                 var retry = 0
                 do {
                     if (retry > 5) {
                         break
                     }
                     val order = RetrofitClient.getService().query(QueryRequest(orderNumber))
-                    HLog.i("order:${order.code} ${order.message}")
+                    HLog.i("order:${order.code} ${if (order.code == 1000) "交易成功!!!" else order.message}")
+                    val change2 = RetrofitClient.getService().changeAmount(ChangeAmountRequest("0.02"))
+                    HLog.i("change:${change2.code} ${change2.message}")
                     retry++
                     delay(500)
                     startSuccess = order.code == 1000
