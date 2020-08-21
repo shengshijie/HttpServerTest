@@ -149,6 +149,19 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
                 }
             }
         })
+        mainViewModel.refundResponseLiveData.observe(this, Observer { state ->
+            when (state) {
+                is State.Loading -> {
+                    tv_log.text = text("Loading")
+                }
+                is State.Success -> {
+                    tv_log.text = text("退款成功:${state.data}")
+                }
+                is State.Error -> {
+                    tv_log.text = text("退款失败:${state.message}")
+                }
+            }
+        })
         mainViewModel.queryResponseLiveData.observe(this, Observer { state ->
             when (state) {
                 is State.Loading -> {
@@ -279,6 +292,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
 
     fun order(view: View) {
         mainViewModel.order(orderNumber)
+    }
+
+    fun refund(view: View) {
+        mainViewModel.refund(orderNumber)
     }
 
     fun query(view: View) {

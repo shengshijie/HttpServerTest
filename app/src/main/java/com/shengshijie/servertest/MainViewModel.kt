@@ -42,6 +42,9 @@ class MainViewModel : ViewModel() {
     private val _orderResponseLiveData = MutableLiveData<State<QueryResponse>>()
     val orderResponseLiveData: LiveData<State<QueryResponse>> = _orderResponseLiveData
 
+    private val _refundResponseLiveData = MutableLiveData<State<Unit>>()
+    val refundResponseLiveData: LiveData<State<Unit>> = _refundResponseLiveData
+
     private val _queryResponseLiveData = MutableLiveData<State<PayResultResponse>>()
     val queryResponseLiveData: LiveData<State<PayResultResponse>> = _queryResponseLiveData
 
@@ -117,6 +120,14 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             DataRepository.order(orderNumber).collect {
                 _orderResponseLiveData.value = it
+            }
+        }
+    }
+
+    fun refund(orderNumber: String?) {
+        viewModelScope.launch {
+            DataRepository.refund(orderNumber).collect {
+                _refundResponseLiveData.value = it
             }
         }
     }

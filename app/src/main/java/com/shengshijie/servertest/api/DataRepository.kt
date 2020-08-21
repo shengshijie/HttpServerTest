@@ -49,6 +49,10 @@ object DataRepository {
         RetrofitClient.getService().order(QueryRequest(orderNumber))
     }
 
+    suspend fun refund(orderNumber: String?) = ResponseUtils.createFlow {
+        RetrofitClient.getService().refund(QueryRequest(orderNumber))
+    }
+
     suspend fun query(orderNumber: String?) = ResponseUtils.createFlow {
         RetrofitClient.getService().query(QueryRequest(orderNumber))
     }

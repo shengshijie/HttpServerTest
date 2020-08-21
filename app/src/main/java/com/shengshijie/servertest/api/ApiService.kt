@@ -35,6 +35,9 @@ interface ApiService {
     @POST("api/order/list")
     suspend fun order(@Body request: QueryRequest): BaseResponse<QueryResponse>
 
+    @POST("api/order/refund")
+    suspend fun refund(@Body request: QueryRequest): BaseResponse<Unit>
+
     @POST("api/pay/query")
     suspend fun query(@Body request: QueryRequest): BaseResponse<PayResultResponse>
 
