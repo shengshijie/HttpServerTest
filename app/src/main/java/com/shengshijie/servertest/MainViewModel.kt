@@ -178,4 +178,14 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    fun test4() {
+        viewModelScope.launch {
+            try {
+                DataRepository.test4()
+            } catch (e: Exception) {
+                HLog.e(e,"test4:$e")
+            }
+        }
+    }
+
 }

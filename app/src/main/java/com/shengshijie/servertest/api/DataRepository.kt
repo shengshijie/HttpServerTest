@@ -3,12 +3,15 @@ package com.shengshijie.servertest.api
 import com.shengshijie.log.HLog
 import com.shengshijie.servertest.ResponseUtils
 import com.shengshijie.servertest.requset.*
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.launch
 import java.io.IOException
+import kotlin.concurrent.thread
 import kotlin.system.measureTimeMillis
 
 object DataRepository {
@@ -149,6 +152,20 @@ object DataRepository {
         repeat(1000) {
             RetrofitClient.getService().setFaceResult(SetFaceResultRequest(faceBase64, userName, userNumber, similarity, threshold, captureTime))
             delay(1000)
+        }
+    }
+
+    suspend fun test4() {
+        var count = 0
+        repeat(10) {
+            HLog.e("EEE", "︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿︿")
+            val cancel = RetrofitClient.getService().cancel(EmptyRequest())
+            HLog.i("cancel:${cancel.code} ${cancel.message}")
+            val setAmount = RetrofitClient.getService().setAmount(SetAmountRequest("1.01"))
+            HLog.i("setAmount:${setAmount.code} ${setAmount.message}")
+            count++
+            HLog.e("EEE", "﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀﹀ $count")
+            delay(100)
         }
     }
 

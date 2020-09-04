@@ -119,6 +119,12 @@
                 android:onClick="test3"
                 android:text="发送人脸信息" />
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="test4"
+                android:text="无响应测试" />
+
         </LinearLayout>
     </ScrollView>
 

@@ -318,6 +318,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
         mainViewModel.test3("", "左烨季", "1801562", "0.8", "80", "${System.currentTimeMillis()}")
     }
 
+    fun test4(view: View) {
+        mainViewModel.test4()
+    }
+
     override fun onRequestPermissionsResult(
             requestCode: Int,
             permissions: Array<out String>,
